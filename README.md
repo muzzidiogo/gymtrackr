@@ -9,7 +9,7 @@ Trabalho Prático para a disciplina de Engenharia de Software da UFMG
 
 ## Tecnologias
 - Backend: Django (Python)
-- FrontEnd: React (Javascript)
+- FrontEnd: Next.js (Javascript)
 - Banco de Dados: PostgreSQL
 
 ## Objetivo
