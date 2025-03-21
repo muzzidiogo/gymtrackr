@@ -8,7 +8,7 @@ Trabalho Prático para a disciplina de Engenharia de Software da UFMG
 - Gabriel Silva
 
 ## Tecnologias
-- Backend: Django (Python)
+- Backend: Flask (Python)
 - FrontEnd: Next.js (Javascript)
 - Banco de Dados: PostgreSQL
 
