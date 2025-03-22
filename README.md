@@ -3,7 +3,7 @@ Trabalho Prático para a disciplina de Engenharia de Software da UFMG
 
 ## Membros
 - Diogo Muzzi
-- Elias Nascif
+- Elias Nacif (Fullstack)
 - João Fernando
 - Gabriel Silva
 
