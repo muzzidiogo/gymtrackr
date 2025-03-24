@@ -4,7 +4,7 @@ Trabalho Prático para a disciplina de Engenharia de Software da UFMG
 ## Membros
 - Diogo Muzzi
 - Elias Nacif (Fullstack)
-- João Fernando
+- João Fernando (Backend)
 - Gabriel Silva
 
 ## Tecnologias
@@ -14,3 +14,15 @@ Trabalho Prático para a disciplina de Engenharia de Software da UFMG
 
 ## Objetivo
 Criar um aplicativo para registro de treinos na academia, onde o usuário pode registrar exercícios, sets, repetições e peso realizados em cada sessão de treino e possa acompanhar sua progressão de carga ao longo do tempo por gráficos. 
+
+## Histórias
+1  - Como usuário eu gostaria de fazer meu cadastro. (CRUD)
+2  - Como usuário eu gostaria de criar, editar e excluir uma sessão de treino.
+3  - Como usuário eu gostaria de iniciar uma sessão de treino.
+4  - Como usuário eu gostaria de selecionar exercícios a partir de um banco de dados.
+5  - Como usuário eu gostaria de adicionar exercícios personalizados.
+6  - Como usuário eu gostaria de medir o tempo de uma sessão.
+7  - Como usuário eu gostaria de registrar séries, repetições e peso para cada exercício.
+8  - Como usuário eu gostaria de marcar um temporizador de descanso entre as séries.
+9  - Como usuário eu gostaria de ver meu histórico passado com datas e desempenho.
+10 - Como usuário eu gostaria de 
