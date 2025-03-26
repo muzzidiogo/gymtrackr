@@ -18,11 +18,11 @@ Criar um aplicativo para registro de treinos na academia, onde o usuário pode r
 ## Backlog do Produto
 - Como usuário eu gostaria de fazer meu cadastro. (CRUD Cadastro)
 - Como usuário eu gostaria de criar, editar e excluir uma sessão de treino. (CRUD Sessão)
-- Como usuário eu gostaria de registrar séries, repetições e peso para cada exercício de um treino.
 - Como usuário eu gostaria de selecionar exercícios a partir de um banco de dados.
 - Como usuário eu gostaria de adicionar exercícios personalizados.
 - Como usuário eu gostaria de iniciar uma sessão de treino.
 - Como usuário eu gostaria de medir o tempo de uma sessão.
+- Como usuário eu gostaria de registrar séries, repetições e peso para cada exercício de um treino.
 - Como usuário eu gostaria de marcar um temporizador de descanso entre as séries.
 - Como usuário eu gostaria de ver meu histórico passado com datas e desempenho.
 - Como usuário eu gostaria de compartilhar meus treinos com outros usuários.
