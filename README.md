@@ -43,7 +43,7 @@ Criar um aplicativo para registro de treinos na academia, onde o usuário pode r
 * Proin ligula augue, vulputate et ultricies sed, porttitor id augue. [Porttitor]
 * Nulla sodales volutpat nulla et dignissim. [Nulla]
 
-### 4.  Como usuário eu gostaria de adicionar exercícios personalizados.
+### 4. Como usuário eu gostaria de registrar séries, repetições e peso para cada exercício de um treino.
 * Lorem ipsum dolor sit amet, consectetur adipiscing elit. [Lorem]
 * Proin ligula augue, vulputate et ultricies sed, porttitor id augue. [Porttitor]
 * Nulla sodales volutpat nulla et dignissim. [Nulla]
