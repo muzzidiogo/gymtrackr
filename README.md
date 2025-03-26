@@ -16,8 +16,8 @@ Trabalho Prático para a disciplina de Engenharia de Software da UFMG
 Criar um aplicativo para registro de treinos na academia, onde o usuário pode registrar exercícios, sets, repetições e peso realizados em cada sessão de treino e possa acompanhar sua progressão de carga ao longo do tempo por gráficos. 
 
 ## Backlog do Produto
-- Como usuário eu gostaria de fazer meu cadastro. (CRUD)
-- Como usuário eu gostaria de criar, editar e excluir uma sessão de treino.
+- Como usuário eu gostaria de fazer meu cadastro. (CRUD Cadastro)
+- Como usuário eu gostaria de criar, editar e excluir uma sessão de treino. (CRUD Sessão)
 - Como usuário eu gostaria de registrar séries, repetições e peso para cada exercício de um treino.
 - Como usuário eu gostaria de selecionar exercícios a partir de um banco de dados.
 - Como usuário eu gostaria de adicionar exercícios personalizados.
