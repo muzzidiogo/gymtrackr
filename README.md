@@ -51,11 +51,23 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 
 
 ### 3. Como usuário eu gostaria de iniciar uma sessão de treino com um cronômetro automático para medir o tempo total da sessão.
-* Adicionar campo tempo_total na tabela sessoes [Diogo - Backend]
-* Criar rota PATCH /sessoes/:id/iniciar (registra datetime de início) [João - Backend]
-* Desenvolver componente de cronômetro em Next.js (useState + useEffect) [Elias - Fullstack]
-* Integrar cronômetro com rota de atualização do tempo [Elias - Fullstack]
-* Estilizar cronômetro (CSS animado) [Gabriel - Frontend]
-* Testes: iniciar/pausar/finalizar cronômetro [Gabriel - Testes]
+| Tarefa                                      | Responsável   |
+|---------------------------------------------|---------------|
+| Adicionar `tempo_total` à tabela `sessoes`  | Diogo         |
+| Rota PATCH `/sessoes/:id/iniciar`           | João          |
+| Componente de cronômetro (hooks)            | Gabriel       |
+| Integração com API                          | Elias         |
+| Estilização CSS do cronômetro               | Gabriel       |
+| Testes de tempo real                        | Elias         |
+
   
 ### 4. Como usuário eu gostaria de registrar séries, repetições e peso para cada exercício de um treino.
+| Tarefa                                      | Responsável   |
+|---------------------------------------------|---------------|
+| Modelar tabela `registros_treino`           | Diogo         |
+| Rota POST `/registros` (lote)               | João          |
+| Componente dinâmico de inputs               | Elias         |
+| Validação frontend (peso > 0)               | Gabriel       |
+| Salvamento em lote                          | Elias         |
+| Testes com dados complexos                  | Gabriel       |
+
