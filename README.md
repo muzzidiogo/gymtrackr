@@ -47,7 +47,7 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 | Testar funcionalidade da interface inicial | Gabriel Silva |
   
 
-### História #1: Como usuário, eu gostaria de fazer meu cadastro (CRUD Cadastro)
+### História #1: Como usuário, eu gostaria de fazer meu cadastro (CRUD Cadastro).
 | Tarefa | Responsável |
 |--------|------------|
 | Criar o modelo de usuário no banco de dados | João Fernando |
@@ -58,7 +58,7 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 | Implementar validação de entrada no frontend e backend | Diogo Muzzi |
 | Testar fluxo completo de cadastro, edição e remoção | Gabriel Silva |
 
-### História #2: Como usuário, eu gostaria de criar, editar e excluir uma sessão de treino selecionando exercícios a partir de um banco de dados pré-definido (CRUD Sessão)
+### História #2: Como usuário, eu gostaria de criar, editar e excluir uma sessão de treino selecionando exercícios a partir de um banco de dados pré-definido (CRUD Sessão).
 | Tarefa | Responsável |
 |--------|------------|
 | Criar o modelo de sessão de treino no banco de dados | João Fernando |
@@ -68,7 +68,7 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 | Desenvolver funcionalidade de seleção de exercícios a partir do banco de dados | Diogo Muzzi |
 | Testar fluxo completo de criação, edição e remoção de sessões de treino | Gabriel Silva |
 
-### História #3: Como usuário, eu gostaria de iniciar uma sessão de treino com um cronômetro automático para medir o tempo total da sessão
+### História #3: Como usuário, eu gostaria de iniciar uma sessão de treino com um cronômetro automático para medir o tempo total da sessão.
 | Tarefa | Responsável |
 |--------|------------|
 | Criar estrutura no frontend para exibir cronômetro | Elias Nacif |
@@ -77,7 +77,7 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 | Integrar cronômetro ao fluxo de treino no frontend | Elias Nacif |
 | Testar funcionalidade do cronômetro e integração com backend | Gabriel Silva |
 
-### História #4: Como usuário, eu gostaria de registrar séries, repetições e peso para cada exercício de um treino
+### História #4: Como usuário, eu gostaria de registrar séries, repetições e peso para cada exercício de um treino.
 | Tarefa | Responsável |
 |--------|------------|
 | Criar estrutura no banco de dados para armazenar séries, repetições e peso | João Fernando |
