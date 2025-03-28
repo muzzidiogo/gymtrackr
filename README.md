@@ -25,7 +25,7 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 - Como usuário eu gostaria de marcar um temporizador de descanso entre as séries.
 - Como usuário eu gostaria de ver meu histórico passado com datas e desempenho.
 - Como usuário eu gostaria de compartilhar meus treinos com outros usuários.
-- Como usuário eu gostaria de fazer amigos com outros usuários. 
+- Como usuário eu gostaria de fazer amigos com outros usuários.  
 - Como usuário eu gostaria de ter um leaderboard com meus amigos.
 
 ## Backlog do Sprint
