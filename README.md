@@ -29,15 +29,15 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 - Como usuário eu gostaria de ter um leaderboard com meus amigos.
 
 ## Backlog do Sprint
-### Pré-requisito: 
-#### Configuração do ambiente de desenvolvimento
-- Instalar Python e configurar um ambiente virtual (venv) para o backend.
-- Instalar Flask e outras dependências necessárias (pip install flask sqlite3 flask-cors etc.).
-- Instalar Node.js e configurar o ambiente do frontend.
-- Instalar Next.js e bibliotecas essenciais (npm install next react react-dom).
-- Instalar SQLite para o banco de dados e configurar a estrutura inicial.
+### Pré-requisitos: 
+#### 1. Configuração do ambiente de desenvolvimento
+|Instalar Python e configurar um ambiente virtual (venv) para o backend.|
+|Instalar Flask e outras dependências necessárias (pip install flask sqlite3 flask-cors etc.).|
+|Instalar Node.js e configurar o ambiente do frontend.|
+|Instalar Next.js e bibliotecas essenciais (npm install next react react-dom).|
+|Instalar SQLite para o banco de dados e configurar a estrutura inicial.|
 
-#### Criar interface inicial do sistema
+#### 2. Criar interface inicial do sistema
 | Tarefa | Responsável |
 |--------|------------|
 | Criar estrutura básica da interface inicial do sistema | Elias Nacif |
