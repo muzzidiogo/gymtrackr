@@ -28,51 +28,43 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 - Como usuário eu gostaria de fazer amigos com outros usuários. 
 - Como usuário eu gostaria de ter um leaderboard com meus amigos.
 
-## Backlog do Sprint
-### 1. Como usuário eu gostaria de fazer meu cadastro. (CRUD Cadastro)
-| Tarefa                                      | Responsável   |
-|---------------------------------------------|---------------|
-| Modelar tabela `usuarios` (SQLite)          | Diogo         |
-| Criar rota POST `/cadastro` (Flask + bcrypt)| João          |
-| Desenvolver tela de cadastro (Next.js)      | Gabriel       |
-| Integrar frontend com API (axios)           | Elias         |
-| Testes manuais                              | Gabriel       |
+# GymTrackr - Backlog do Sprint
 
-  
-### 2. Como usuário eu gostaria de criar, editar e excluir uma sessão de treino selecionando exercícios a partir de um banco de dados pré definido. (CRUD Sessão)
-| Tarefa                                      | Responsável   |
-|---------------------------------------------|---------------|
-| Modelar tabelas `sessoes` e `exercicios`    | Diogo         |
-| Implementar rotas CRUD no Flask             | João          |
-| Popular banco com exercícios pré-definidos  | Diogo         |
-| Criar UI de sessões (lista/formulário)      | Elias         |
-| Componente de seleção de exercícios         | Gabriel       |
-| Testes CRUD                                 | Elias         |
+## História #1: Como usuário, eu gostaria de fazer meu cadastro (CRUD Cadastro)
+| Tarefa | Responsável |
+|--------|------------|
+| Criar o modelo de usuário no banco de dados | João Fernando |
+| Implementar rotas de criação, edição e remoção de usuários no backend | João Fernando |
+| Criar API para comunicação do frontend com o backend | Diogo Muzzi |
+| Criar interface de cadastro no frontend | Elias Nacif |
+| Implementar validação de entrada no frontend e backend | Diogo Muzzi |
+| Testar fluxo completo de cadastro, edição e remoção | Gabriel Silva |
 
+## História #2: Como usuário, eu gostaria de criar, editar e excluir uma sessão de treino selecionando exercícios a partir de um banco de dados pré-definido (CRUD Sessão)
+| Tarefa | Responsável |
+|--------|------------|
+| Criar o modelo de sessão de treino no banco de dados | João Fernando |
+| Implementar rotas para criação, edição e remoção de sessões no backend | João Fernando |
+| Criar API para comunicação do frontend com o backend | Diogo Muzzi |
+| Criar interface para manipulação de sessões de treino no frontend | Elias Nacif |
+| Desenvolver funcionalidade de seleção de exercícios a partir do banco de dados | Diogo Muzzi |
+| Testar fluxo completo de criação, edição e remoção de sessões de treino | Gabriel Silva |
 
-### 3. Como usuário eu gostaria de iniciar uma sessão de treino com um cronômetro automático para medir o tempo total da sessão.
-| Tarefa                                      | Responsável   |
-|---------------------------------------------|---------------|
-| Adicionar `tempo_total` à tabela `sessoes`  | Diogo         |
-| Rota PATCH `/sessoes/:id/iniciar`           | João          |
-| Componente de cronômetro (hooks)            | Gabriel       |
-| Integração com API                          | Elias         |
-| Estilização CSS do cronômetro               | Gabriel       |
-| Testes de tempo real                        | Elias         |
+## História #3: Como usuário, eu gostaria de iniciar uma sessão de treino com um cronômetro automático para medir o tempo total da sessão
+| Tarefa | Responsável |
+|--------|------------|
+| Criar estrutura no frontend para exibir cronômetro | Elias Nacif |
+| Implementar lógica do cronômetro no frontend | Elias Nacif |
+| Criar API para salvar e recuperar tempos de treino | João Fernando |
+| Integrar cronômetro ao fluxo de treino no frontend | Elias Nacif |
+| Testar funcionalidade do cronômetro e integração com backend | Gabriel Silva |
 
-  
-### 4. Como usuário eu gostaria de registrar séries, repetições e peso para cada exercício de um treino.
-| Tarefa                                      | Responsável   |
-|---------------------------------------------|---------------|
-| Modelar tabela `registros_treino`           | Diogo         |
-| Rota POST `/registros` (lote)               | João          |
-| Componente dinâmico de inputs               | Elias         |
-| Validação frontend (peso > 0)               | Gabriel       |
-| Salvamento em lote                          | Elias         |
-| Testes com dados complexos                  | Gabriel       |
-
-## Fluxo de Trabalho
-1. Backend: Modelagem → Rotas → Testes
-2. Frontend: Componentes → Integração → Estilização
-3. Fullstack: Garantir comunicação entre partes
+## História #4: Como usuário, eu gostaria de registrar séries, repetições e peso para cada exercício de um treino
+| Tarefa | Responsável |
+|--------|------------|
+| Criar estrutura no banco de dados para armazenar séries, repetições e peso | João Fernando |
+| Implementar rotas para salvar e recuperar dados de treino no backend | João Fernando |
+| Criar API para comunicação do frontend com o backend | Diogo Muzzi |
+| Desenvolver interface para entrada de dados durante o treino | Elias Nacif |
+| Testar fluxo completo de registro e recuperação de séries e pesos | Gabriel Silva |
 
