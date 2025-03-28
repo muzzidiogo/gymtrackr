@@ -54,6 +54,3 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 * Testes: iniciar/pausar/finalizar cronômetro [Gabriel - Testes]
   
 ### 4. Como usuário eu gostaria de registrar séries, repetições e peso para cada exercício de um treino.
-* Lorem ipsum dolor sit amet, consectetur adipiscing elit. [Lorem]
-* Proin ligula augue, vulputate et ultricies sed, porttitor id augue. [Porttitor]
-* Nulla sodales volutpat nulla et dignissim. [Nulla]
