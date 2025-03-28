@@ -1,5 +1,5 @@
 # GymTrackr
-Trabalho Prático para a disciplina de Engenharia de Software da UFMG
+Trabalho Prático para a disciplina de Engenharia de Software da UFMG (2025/1)
 
 ## Membros
 - Diogo Muzzi (Backend)
