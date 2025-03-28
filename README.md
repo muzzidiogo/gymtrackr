@@ -71,3 +71,13 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 | Salvamento em lote                          | Elias         |
 | Testes com dados complexos                  | Gabriel       |
 
+## Fluxo de Trabalho
+1. Backend: Modelagem → Rotas → Testes
+2. Frontend: Componentes → Integração → Estilização
+3. Fullstack: Garantir comunicação entre partes
+
+## Próximos Passos
+- [ ] Definir prazos para cada tarefa
+- [ ] Criar repositório no GitHub
+- [ ] Configurar CI/CD básico
+
