@@ -85,5 +85,3 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 | Criar API para comunicação do frontend com o backend | Diogo Muzzi |
 | Desenvolver interface para entrada de dados durante o treino | Elias Nacif |
 | Testar fluxo completo de registro e recuperação de séries e pesos | Gabriel Silva |
-
-estou testando meu git_commit
