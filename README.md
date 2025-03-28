@@ -36,7 +36,8 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 | Criar o modelo de usuário no banco de dados | João Fernando |
 | Implementar rotas de criação, edição e remoção de usuários no backend | João Fernando |
 | Criar API para comunicação do frontend com o backend | Diogo Muzzi |
-| Criar interface de página e cadastro no frontend | Elias Nacif |
+| Criar interface de cadastro no frontend | Elias Nacif |
+| Criar interface da página inicial | Elias Nacif |
 | Implementar validação de entrada no frontend e backend | Diogo Muzzi |
 | Testar fluxo completo de cadastro, edição e remoção | Gabriel Silva |
 
