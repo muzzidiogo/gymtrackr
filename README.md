@@ -3,7 +3,7 @@ Trabalho Prático para a disciplina de Engenharia de Software da UFMG (2025/1)
 
 ## Membros
 - Diogo Muzzi (Backend)
-- Elias Nacif (Fullstack)
+- Elias Nacif (Frontend)
 - João Fernando (Backend)
 - Gabriel Silva (Fullstack)
 
