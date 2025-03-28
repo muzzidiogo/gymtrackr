@@ -30,20 +30,25 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 
 ## Backlog do Sprint
 ### 1. Como usuário eu gostaria de fazer meu cadastro. (CRUD Cadastro)
-* Modelar tabela usuarios no SQLite (campos: id, nome, email, senha_cripto) [Diogo - Backend]
-* Criar rota POST /cadastro no Flask (validação de e-mail/senha) [João - Backend]
-* Implementar criptografia de senha com bcrypt [Diogo - Backend]
-* Criar tela de cadastro em Next.js (formulário + validação frontend) [Elias - Fullstack]
-* Conectar frontend à API (axios/fetch) [Elias - Fullstack]
-* Testes manuais: fluxo completo de cadastro [Gabriel - Testes]
+| Tarefa                                      | Responsável   |
+|---------------------------------------------|---------------|
+| Modelar tabela `usuarios` (SQLite)          | Diogo         |
+| Criar rota POST `/cadastro` (Flask + bcrypt)| João          |
+| Desenvolver tela de cadastro (Next.js)      | Gabriel       |
+| Integrar frontend com API (axios)           | Elias         |
+| Testes manuais                              | Gabriel       |
+
   
 ### 2. Como usuário eu gostaria de criar, editar e excluir uma sessão de treino selecionando exercícios a partir de um banco de dados pré definido. (CRUD Sessão)
-* Modelar tabelas sessoes e exercicios (relação 1:N) [Diogo - Backend]
-* Criar rotas CRUD no Flask [João - Backend]
-* Popular banco com exercícios pré-definidos (ex: "Supino Reto") [Gabriel - Dados]
-* Criar interface de sessões em Next.js (lista + formulário) [Elias - Fullstack]
-* Implementar seleção de exercícios (dropdown com busca) [Elias - Fullstack]
-* Testes: criar/editar/excluir sessão com exercícios [Gabriel - Testes]
+| Tarefa                                      | Responsável   |
+|---------------------------------------------|---------------|
+| Modelar tabelas `sessoes` e `exercicios`    | Diogo         |
+| Implementar rotas CRUD no Flask             | João          |
+| Popular banco com exercícios pré-definidos  | Diogo         |
+| Criar UI de sessões (lista/formulário)      | Elias         |
+| Componente de seleção de exercícios         | Gabriel       |
+| Testes CRUD                                 | Elias         |
+
 
 ### 3. Como usuário eu gostaria de iniciar uma sessão de treino com um cronômetro automático para medir o tempo total da sessão.
 * Adicionar campo tempo_total na tabela sessoes [Diogo - Backend]
