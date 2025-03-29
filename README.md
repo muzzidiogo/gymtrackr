@@ -34,10 +34,10 @@ O aplicativo tem como objetivo principal proporcionar aos usuários uma forma ef
 | Tarefas |
 |--------------------|
 | Instalar Python e configurar um ambiente virtual (venv) para o backend. | 
-| Instalar Flask e outras dependências necessárias (pip install flask sqlite3 flask-cors etc.). | 
+| Instalar Flask e outras dependências necessárias. | 
 | Instalar Node.js e configurar o ambiente do frontend. | 
-| Instalar Next.js e bibliotecas essenciais (npm install next react react-dom). | 
-| Instalar SQLite para o banco de dados e configurar a estrutura inicial. |
+| Instalar Next.js e bibliotecas essenciais. | 
+| Instalar SQLAlchemy para o banco de dados e configurar a estrutura inicial. |
 
 #### 2. Criar interface inicial do sistema
 | Tarefa | Responsável |
