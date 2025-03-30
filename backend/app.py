@@ -1,33 +1,35 @@
+# app.py
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from extensions import db, migrate, cors
+from models.user import Usuario
 
-# Inicializando o banco de dados
-db = SQLAlchemy()
-
-# Função para criar o aplicativo Flask
-def create_app():
-    # Inicializando o aplicativo Flask
+def criar_app():
     app = Flask(__name__)
-
-    # Configurando o banco de dados SQLite
+    
+    # Configuração do banco de dados
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gymtrackr.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-    # Inicializando o banco de dados
+    
+    # Inicializar extensões
     db.init_app(app)
-
-    # Importando as rotas de usuário (depois de definir o app)
-    from routes.user_routes import user_bp
-    app.register_blueprint(user_bp)
-
-    # Definindo a rota para a página inicial
+    migrate.init_app(app, db)
+    cors.init_app(app)
+    
+    # Registrar blueprints
+    from routes.user_routes import usuario_bp
+    app.register_blueprint(usuario_bp, url_prefix='/api')
+    
     @app.route('/')
     def home():
         return "Bem-vindo ao GymTrackr!"
-
+    
     return app
 
-# Rodando o servidor
-if __name__ == "__main__":
-    app = create_app()  # Criando a instância do app
+if __name__ == '__main__':
+    app = criar_app()
+    
+    # Criar as tabelas no banco de dados (apenas para desenvolvimento)
+    with app.app_context():
+        db.create_all()
+    
     app.run(debug=True)

@@ -1,46 +1,87 @@
+# routes/user_routes.py
 from flask import Blueprint, request, jsonify
-from models.user import db, User  # Importando o banco de dados e o modelo de usuário
+from extensions import db
+from models.user import Usuario
 
-# Criando um Blueprint para as rotas de usuário
-user_bp = Blueprint('user_bp', __name__)
+usuario_bp = Blueprint('usuario_bp', __name__)
 
-# Rota para cadastro de usuário
-@user_bp.route('/cadastro', methods=['POST'])
-def cadastrar_usuario():
-    nome = request.json.get('nome')
-    email = request.json.get('email')
-    senha = request.json.get('senha')
+# Criar um usuário
+@usuario_bp.route('/usuarios', methods=['POST'])
+def criar_usuario():
+    dados = request.get_json()
+    if not dados or not all(k in dados for k in ("nome", "email", "senha")):
+        return jsonify({"mensagem": "Dados inválidos"}), 400
+    
+    # Verificar se o email já existe
+    usuario_existente = Usuario.query.filter_by(email=dados['email']).first()
+    if usuario_existente:
+        return jsonify({"mensagem": "Email já está em uso"}), 400
+    
+    novo_usuario = Usuario(
+        nome=dados['nome'],
+        email=dados['email'],
+        senha=dados['senha']  # Em produção, esta senha deve ser criptografada!
+    )
+    
+    db.session.add(novo_usuario)
+    db.session.commit()
+    
+    return jsonify({
+        "mensagem": "Usuário criado com sucesso!",
+        "usuario": novo_usuario.to_dict()
+    }), 201
 
-    if nome and email and senha:
-        usuario = User(nome=nome, email=email, senha=senha)
-        db.session.add(usuario)
-        db.session.commit()
-        return jsonify({"message": "Usuário cadastrado com sucesso!"}), 201
-    return jsonify({"message": "Dados inválidos"}), 400
+# Listar usuários
+@usuario_bp.route('/usuarios', methods=['GET'])
+def listar_usuarios():
+    usuarios = Usuario.query.all()
+    return jsonify([usuario.to_dict() for usuario in usuarios])
 
-# Rota para editar usuário
-@user_bp.route('/usuario/<int:id>', methods=['PUT'])
+# Obter um usuário específico
+@usuario_bp.route('/usuarios/<int:id>', methods=['GET'])
+def obter_usuario(id):
+    usuario = Usuario.query.get(id)
+    if not usuario:
+        return jsonify({"mensagem": "Usuário não encontrado"}), 404
+    return jsonify(usuario.to_dict())
+
+# Editar um usuário
+@usuario_bp.route('/usuarios/<int:id>', methods=['PUT'])
 def editar_usuario(id):
-    usuario = User.query.get(id)
-    if usuario:
-        nome = request.json.get('nome', usuario.nome)
-        email = request.json.get('email', usuario.email)
-        senha = request.json.get('senha', usuario.senha)
+    usuario = Usuario.query.get(id)
+    if not usuario:
+        return jsonify({"mensagem": "Usuário não encontrado"}), 404
+    
+    dados = request.get_json()
+    
+    if 'nome' in dados:
+        usuario.nome = dados['nome']
+    
+    if 'email' in dados and dados['email'] != usuario.email:
+        # Verificar se o novo email já está em uso
+        email_existente = Usuario.query.filter_by(email=dados['email']).first()
+        if email_existente:
+            return jsonify({"mensagem": "Email já está em uso"}), 400
+        usuario.email = dados['email']
+    
+    if 'senha' in dados:
+        usuario.senha = dados['senha']  # Em produção, esta senha deve ser criptografada!
+    
+    db.session.commit()
+    
+    return jsonify({
+        "mensagem": "Usuário atualizado com sucesso!",
+        "usuario": usuario.to_dict()
+    })
 
-        usuario.nome = nome
-        usuario.email = email
-        usuario.senha = senha
-
-        db.session.commit()
-        return jsonify({"message": "Usuário atualizado com sucesso!"}), 200
-    return jsonify({"message": "Usuário não encontrado"}), 404
-
-# Rota para remover usuário
-@user_bp.route('/usuario/<int:id>', methods=['DELETE'])
+# Deletar um usuário
+@usuario_bp.route('/usuarios/<int:id>', methods=['DELETE'])
 def remover_usuario(id):
-    usuario = User.query.get(id)
-    if usuario:
-        db.session.delete(usuario)
-        db.session.commit()
-        return jsonify({"message": "Usuário removido com sucesso!"}), 200
-    return jsonify({"message": "Usuário não encontrado"}), 404
+    usuario = Usuario.query.get(id)
+    if not usuario:
+        return jsonify({"mensagem": "Usuário não encontrado"}), 404
+    
+    db.session.delete(usuario)
+    db.session.commit()
+    
+    return jsonify({"mensagem": "Usuário removido com sucesso!"})
