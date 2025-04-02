@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Head from 'next/head';
+import Link from 'next/link';
 
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -45,12 +46,16 @@ export default function Home() {
               
               {/* Auth Buttons */}
               <div className="hidden md:flex space-x-4">
+                <Link href="/Entrar">
                 <button className="px-4 py-2 border border-indigo-500 text-indigo-400 rounded-lg font-medium hover:bg-gray-700 transition-colors">
                   Entrar
                 </button>
+                </Link>
+                <Link href="/Registrar">
                 <button className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity shadow-md">
                   Registrar
                 </button>
+                </Link>
               </div>
             </nav>
           </div>
@@ -86,9 +91,11 @@ export default function Home() {
               <p className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed">
                 GymTrackr é a plataforma perfeita para monitorar seus treinos, definir metas e visualizar seu progresso. Alcance seus objetivos fitness com dados precisos e insights valiosos.
               </p>
+              <Link href="/Registrar">
               <button className="px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity shadow-lg transform hover:-translate-y-1 transition-transform">
                 Comece Agora
               </button>
+              </Link>
             </div>
             <div className="md:w-1/2 mt-12 md:mt-0 flex justify-center">
               <div className="relative">
@@ -138,9 +145,11 @@ export default function Home() {
               <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-100">Pronto para transformar seus treinos?</h2>
               <p className="text-xl text-gray-300 mb-10">Junte-se a milhares de usuários que já melhoraram seus resultados com o GymTrackr.</p>
               <div className="inline-block bg-gradient-to-r from-indigo-500 to-purple-500 p-0.5 rounded-lg shadow-lg">
+                <Link href="/Registrar">
                 <button className="px-8 py-4 bg-gray-900 text-white rounded-lg font-medium hover:bg-opacity-90 transition-all transform hover:-translate-y-1">
                   Criar Conta Gratuita
                 </button>
+                </Link>
               </div>
             </div>
           </section>
