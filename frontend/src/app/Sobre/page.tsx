@@ -75,8 +75,8 @@ export default function Sobre() {
               {/* Desktop Navigation */}
               <div className="hidden md:flex md:items-center space-x-8">
                 <a href="/" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Home</a>
-                <a href="/recursos" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Recursos</a>
-                <a href="/planos" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Planos</a>
+                <a href="/Recursos" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Recursos</a>
+                <a href="/Blog" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Blog</a>
                 <a href="/Sobre" className="font-medium text-indigo-400 transition-colors">Sobre</a>
               </div>
               
@@ -259,7 +259,7 @@ export default function Sobre() {
                 <h3 className="text-lg font-semibold mb-4 text-indigo-300">Empresa</h3>
                 <ul className="space-y-3">
                   <li><a href="#" className="text-gray-500 hover:text-indigo-300 transition-colors">Sobre Nós</a></li>
-                  <li><a href="#" className="text-gray-500 hover:text-indigo-300 transition-colors">Blog</a></li>
+                  <li><a href="/Blog" className="text-gray-500 hover:text-indigo-300 transition-colors">Blog</a></li>
                   <li><a href="#" className="text-gray-500 hover:text-indigo-300 transition-colors">Carreiras</a></li>
                   <li><a href="#" className="text-gray-500 hover:text-indigo-300 transition-colors">Contato</a></li>
                 </ul>

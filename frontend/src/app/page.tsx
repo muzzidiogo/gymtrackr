@@ -39,8 +39,8 @@ export default function Home() {
               {/* Desktop Navigation */}
               <div className="hidden md:flex md:items-center space-x-8">
                 <a href="/" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Home</a>
-                <a href="/recursos" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Recursos</a>
-                <a href="/planos" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Planos</a>
+                <a href="/Recursos" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Recursos</a>
+                <a href="/Blog" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Blog</a>
                 <a href="/Sobre" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Sobre</a>
               </div>
               
