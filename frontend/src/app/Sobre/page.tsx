@@ -31,7 +31,7 @@ export default function Sobre() {
       foto: "/Elias.jpg",
       descricao: "Estudante de Engenharia Elétrica UFMG | Amante de programação (C++, C, Python) e desenvolvimento web (HTML, CSS, JS, React).",
       github: "https://github.com/Elias-Nacif",
-      linkedin: "https://www.linkedin.com/in/elias-nacif-96125a1ba/"
+      linkedin: "https://www.linkedin.com/in/elias-miranda-nacif-rocha"
     },
     {
       nome: "Gabriel Silva",
