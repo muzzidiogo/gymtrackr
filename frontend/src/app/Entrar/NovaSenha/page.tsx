@@ -7,20 +7,19 @@ import Link from 'next/link';
 export default function Entrar() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    // Implement sign in logic here
-    console.log({ email, password, rememberMe });
+    // Implement registration logic here
+    console.log({ email, password, confirmPassword });
   };
 
   return (
     <>
       <Head>
-        <title>Login | GymTrackr</title>
-        <meta name="description" content="Acesse sua conta GymTrackr" />
+        <title>Nova Senha | GymTrackr</title>
+        <meta name="description" content="Renove a sua senha" />
       </Head>
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
         {/* Header with logo */}
@@ -42,46 +41,19 @@ export default function Entrar() {
               <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-20"></div>
               <div className="relative bg-gray-800 rounded-xl shadow-2xl p-8 border border-gray-700">
                 <div className="text-center mb-8">
-                  <h1 className="text-3xl font-bold text-indigo-300">Bem-vindo de volta</h1>
-                  <p className="text-gray-400 mt-2">Entre na sua conta para continuar</p>
+                  <h1 className="text-3xl font-bold text-indigo-300">Nova Senha</h1>
+                  <p className="text-gray-400 mt-2">Entre com uma nova senha para continuar</p>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                   <div className="space-y-6">
-                    {/* Email Field */}
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                        Email
-                      </label>
-                      <input
-                        id="email"
-                        name="email"
-                        type="email"
-                        autoComplete="email"
-                        required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-100 placeholder-gray-400"
-                        placeholder="seu@email.com"
-                      />
-                    </div>
 
                     {/* Password Field */}
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <label htmlFor="password" className="block text-sm font-medium text-gray-300">
-                          Senha
+                          Nova Senha
                         </label>
-                        <a
-                          href="/esqueci-senha"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            alert("Verifique seu e-mail para redefinir a senha.");
-                          }}
-                          className="text-sm text-indigo-400 hover:text-indigo-300"
-                        >
-                          Esqueceu a senha?
-                        </a>
                       </div>
                       <input
                         id="password"
@@ -95,30 +67,33 @@ export default function Entrar() {
                         placeholder="••••••••"
                       />
                     </div>
-
-                    {/* Remember Me Checkbox */}
-                    <div className="flex items-center">
-                      <input
-                        id="remember-me"
-                        name="remember-me"
-                        type="checkbox"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        className="h-4 w-4 text-indigo-500 focus:ring-indigo-500 border-gray-600 rounded bg-gray-700"
-                      />
-                      <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
-                        Lembrar de mim
+                    <div>
+                      <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300 mb-2">
+                        Confirmar Senha
                       </label>
+                      <input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        autoComplete="new-password"
+                        required
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-100 placeholder-gray-400"
+                        placeholder="••••••••"
+                      />
                     </div>
 
                     {/* Submit Button */}
                     <div>
+                      <Link href="/Entrar">
                       <button
                         type="submit"
                         className="w-full py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg font-medium hover:opacity-90 transition-opacity shadow-lg flex items-center justify-center"
                       >
-                        Entrar
+                        Retornar
                       </button>
+                      </Link>
                     </div>
 
                     {/* Social Login Options */}
