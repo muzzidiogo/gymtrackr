@@ -20,11 +20,13 @@ export default function UserProfile() {
     const [editMode, setEditMode] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [showPasswordForm, setShowPasswordForm] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [passwordFormData, setPasswordFormData] = useState({
         currentPassword: "",
         newPassword: "",
         confirmPassword: ""
     });
+    const [deletePassword, setDeletePassword] = useState("");
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value, type, checked } = e.target;
@@ -52,7 +54,7 @@ export default function UserProfile() {
           
           // Limpar mensagem após 3 segundos
           setTimeout(() => {
-            // resto do código
+            setSuccessMessage("");
           }, 3000);
         }, 500);
       };
@@ -74,6 +76,30 @@ export default function UserProfile() {
             setSuccessMessage("");
           }, 3000);
         }, 500);
+      };
+
+      const handleDeleteChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setDeletePassword(e.target.value);
+      };
+
+      const handleDeleteSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        // Simulação de exclusão de conta
+        setTimeout(() => {
+          // Em um caso real, redirecionaria para a página inicial após excluir
+          window.location.href = "/";
+        }, 1000);
+      };
+
+      const showDeleteConfirmation = () => {
+        setShowDeleteConfirm(true);
+        setEditMode(false);
+        setShowPasswordForm(false);
+      };
+
+      const cancelDelete = () => {
+        setShowDeleteConfirm(false);
+        setDeletePassword("");
       };
 
     return (
@@ -202,30 +228,36 @@ export default function UserProfile() {
                                     <h2 className="text-xl font-bold text-white mb-1">{userData.nome}</h2>
                                 </div>
                                 
-                                <div className="mt-8">
+                                <div className="mt-8 space-y-3">
                                     <button 
-                                        onClick={() => { setEditMode(!editMode); setShowPasswordForm(false); }} 
+                                        onClick={() => { setEditMode(!editMode); setShowPasswordForm(false); setShowDeleteConfirm(false); }} 
                                         className={`w-full py-3 rounded-lg font-medium shadow-lg ${editMode 
                                             ? "bg-gray-700 text-gray-300 hover:bg-gray-600" 
                                             : "bg-gradient-to-r from-indigo-600 to-indigo-500 text-white hover:opacity-90"} 
-                                            transition-all mb-3`}>
+                                            transition-all`}>
                                         {editMode ? "Cancelar Edição" : "Editar Dados"}
                                     </button>
                                     
                                     <button 
-                                        onClick={() => { setShowPasswordForm(!showPasswordForm); setEditMode(false); }} 
+                                        onClick={() => { setShowPasswordForm(!showPasswordForm); setEditMode(false); setShowDeleteConfirm(false); }} 
                                         className={`w-full py-3 rounded-lg font-medium shadow-lg ${showPasswordForm 
                                             ? "bg-gray-700 text-gray-300 hover:bg-gray-600" 
                                             : "bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:opacity-90"} 
                                             transition-all`}>
                                         {showPasswordForm ? "Cancelar" : "Alterar Senha"}
                                     </button>
+
+                                    <button 
+                                        onClick={showDeleteConfirmation} 
+                                        className="w-full py-3 rounded-lg font-medium shadow-lg bg-gradient-to-r from-red-600 to-red-500 text-white hover:opacity-90 transition-all">
+                                        Excluir Conta
+                                    </button>
                                 </div>
                             </div>
 
                             {/* Profile Form */}
                             <div className="md:w-2/3 p-8">
-                                {!showPasswordForm ? (
+                                {!showPasswordForm && !showDeleteConfirm ? (
                                     <form onSubmit={handleSubmit}>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
@@ -326,7 +358,7 @@ export default function UserProfile() {
                                             </div>
                                         )}
                                     </form>
-                                ) : (
+                                ) : showPasswordForm ? (
                                     <form onSubmit={handlePasswordSubmit}>
                                         <h3 className="text-xl font-bold text-white mb-6">Alterar Senha</h3>
                                         
@@ -375,6 +407,54 @@ export default function UserProfile() {
                                             </button>
                                         </div>
                                     </form>
+                                ) : (
+                                    <div>
+                                        <h3 className="text-xl font-bold text-white mb-4">Excluir Conta</h3>
+                                        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 mb-6">
+                                            <div className="flex items-start">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-400 mt-0.5 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                </svg>
+                                                <div>
+                                                    <h4 className="text-red-400 font-semibold mb-1">Atenção: Esta ação é irreversível</h4>
+                                                    <p className="text-gray-300 text-sm">Ao excluir sua conta, todos os seus dados serão permanentemente removidos de nossos servidores. Isso inclui seu histórico de treinos, métricas corporais e todas as informações pessoais.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <form onSubmit={handleDeleteSubmit} className="mt-6">
+                                            <div className="mb-6">
+                                                <label className="block text-gray-400 text-sm font-medium mb-2">Digite sua senha para confirmar</label>
+                                                <input 
+                                                    type="password" 
+                                                    value={deletePassword} 
+                                                    onChange={handleDeleteChange}
+                                                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-red-500 focus:outline-none"
+                                                    required
+                                                    placeholder="Sua senha atual"
+                                                />
+                                            </div>
+
+                                            <div className="flex items-center justify-between mt-8">
+                                                <button 
+                                                    type="button" 
+                                                    onClick={cancelDelete}
+                                                    className="px-6 py-3 bg-gray-700 text-gray-300 rounded-lg font-medium hover:bg-gray-600 transition-all"
+                                                >
+                                                    Cancelar
+                                                </button>
+                                                <button 
+                                                    type="submit" 
+                                                    className="px-6 py-3 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-all shadow-lg shadow-red-500/20 flex items-center"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                    Excluir Minha Conta
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 )}
                             </div>
                         </div>
