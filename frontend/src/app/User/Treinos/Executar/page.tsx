@@ -36,11 +36,19 @@ export default function ExecutarTreino() {
         peso: ""
     });
     const [showFinishConfirmation, setShowFinishConfirmation] = useState(false);
+    const [showAddExerciseForm, setShowAddExerciseForm] = useState(false);
+    const [newExercise, setNewExercise] = useState({
+        nome: "",
+        series: 3,
+        repeticoes: "10-12",
+        peso: "0kg",
+        completed: false
+    });
 
     // Efeito para o cronômetro
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
-        
+
         if (isRunning) {
             interval = setInterval(() => {
                 setTime(prevTime => prevTime + 1);
@@ -48,7 +56,7 @@ export default function ExecutarTreino() {
         } else if (interval) {
             clearInterval(interval);
         }
-        
+
         return () => {
             if (interval) clearInterval(interval);
         };
@@ -82,7 +90,7 @@ export default function ExecutarTreino() {
             ...updatedExercicios[index],
             completed: !updatedExercicios[index].completed
         };
-        
+
         setWorkout({
             ...workout,
             exercicios: updatedExercicios
@@ -102,7 +110,7 @@ export default function ExecutarTreino() {
     // Salvar edição de exercício
     const saveExerciseEdit = () => {
         if (editingExercise === null) return;
-        
+
         const updatedExercicios = [...workout.exercicios];
         updatedExercicios[editingExercise] = {
             ...updatedExercicios[editingExercise],
@@ -110,13 +118,51 @@ export default function ExecutarTreino() {
             repeticoes: exerciseEdits.repeticoes,
             peso: exerciseEdits.peso
         };
-        
+
         setWorkout({
             ...workout,
             exercicios: updatedExercicios
         });
-        
+
         setEditingExercise(null);
+    };
+
+    const addExercise = () => {
+        // Validação básica
+        if (!newExercise.nome) {
+            alert("Nome do exercício é obrigatório");
+            return;
+        }
+
+        const updatedExercicios = [...workout.exercicios, newExercise];
+
+        setWorkout({
+            ...workout,
+            exercicios: updatedExercicios
+        });
+
+        // Resetar o formulário
+        setNewExercise({
+            nome: "",
+            series: 3,
+            repeticoes: "10-12",
+            peso: "0kg",
+            completed: false
+        });
+
+        // Fechar o formulário
+        setShowAddExerciseForm(false);
+    };
+
+    const deleteExercise = (index: number) => {
+        if (window.confirm("Tem certeza que deseja excluir este exercício?")) {
+            const updatedExercicios = workout.exercicios.filter((_, i) => i !== index);
+
+            setWorkout({
+                ...workout,
+                exercicios: updatedExercicios
+            });
+        }
     };
 
     // Concluir treino
@@ -125,9 +171,14 @@ export default function ExecutarTreino() {
         // Por exemplo, guardar o tempo total, os exercícios feitos, etc.
         const totalTime = formatTime(time);
         console.log(`Treino concluído em ${totalTime}`);
-        
+
         // Simular retorno à página de treinos
         window.location.href = "/User/Treinos";
+    };
+
+    const openFinishConfirmation = () => {
+        setIsRunning(false); // Pausa o cronômetro
+        setShowFinishConfirmation(true);
     };
 
     return (
@@ -229,7 +280,7 @@ export default function ExecutarTreino() {
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mx-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
-                        <span className="text-indigo-400">Executar Treino</span>
+                        <span className="text-indigo-400">{workout.nome}</span>
                     </div>
 
                     {/* Page Header */}
@@ -249,7 +300,7 @@ export default function ExecutarTreino() {
                                 <div className="text-6xl font-bold text-white mb-8 font-mono">{formatTime(time)}</div>
                                 <div className="flex space-x-4">
                                     {!isRunning ? (
-                                        <button 
+                                        <button
                                             onClick={startTimer}
                                             className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center"
                                         >
@@ -257,10 +308,10 @@ export default function ExecutarTreino() {
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
-                                            Iniciar
+                                            Rodar
                                         </button>
                                     ) : (
-                                        <button 
+                                        <button
                                             onClick={pauseTimer}
                                             className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors flex items-center"
                                         >
@@ -270,8 +321,19 @@ export default function ExecutarTreino() {
                                             Pausar
                                         </button>
                                     )}
-                                    <button 
-                                        onClick={() => setShowFinishConfirmation(true)}
+                                    {time > 0 && (
+                                        <button
+                                            onClick={resetTimer}
+                                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            Zerar
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={openFinishConfirmation}
                                         className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -290,8 +352,8 @@ export default function ExecutarTreino() {
                             <h2 className="text-xl font-semibold text-white mb-6">Exercícios</h2>
                             <div className="space-y-4">
                                 {workout.exercicios.map((exercicio, index) => (
-                                    <div 
-                                        key={index} 
+                                    <div
+                                        key={index}
                                         className={`p-4 rounded-lg border ${exercicio.completed ? 'bg-gray-700/60 border-green-500' : 'bg-gray-750 border-gray-700'}`}
                                     >
                                         {editingExercise === index ? (
@@ -300,7 +362,7 @@ export default function ExecutarTreino() {
                                                 <div className="flex justify-between items-center">
                                                     <h3 className="text-lg font-medium text-white">{exercicio.nome}</h3>
                                                     <div className="flex space-x-2">
-                                                        <button 
+                                                        <button
                                                             onClick={saveExerciseEdit}
                                                             className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                                                         >
@@ -308,7 +370,7 @@ export default function ExecutarTreino() {
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                             </svg>
                                                         </button>
-                                                        <button 
+                                                        <button
                                                             onClick={() => setEditingExercise(null)}
                                                             className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                                                         >
@@ -325,7 +387,7 @@ export default function ExecutarTreino() {
                                                             type="number"
                                                             className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                                             value={exerciseEdits.series}
-                                                            onChange={(e) => setExerciseEdits({...exerciseEdits, series: parseInt(e.target.value) || 0})}
+                                                            onChange={(e) => setExerciseEdits({ ...exerciseEdits, series: parseInt(e.target.value) || 0 })}
                                                         />
                                                     </div>
                                                     <div>
@@ -334,7 +396,7 @@ export default function ExecutarTreino() {
                                                             type="text"
                                                             className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                                             value={exerciseEdits.repeticoes}
-                                                            onChange={(e) => setExerciseEdits({...exerciseEdits, repeticoes: e.target.value})}
+                                                            onChange={(e) => setExerciseEdits({ ...exerciseEdits, repeticoes: e.target.value })}
                                                         />
                                                     </div>
                                                     <div>
@@ -343,7 +405,7 @@ export default function ExecutarTreino() {
                                                             type="text"
                                                             className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                                             value={exerciseEdits.peso}
-                                                            onChange={(e) => setExerciseEdits({...exerciseEdits, peso: e.target.value})}
+                                                            onChange={(e) => setExerciseEdits({ ...exerciseEdits, peso: e.target.value })}
                                                         />
                                                     </div>
                                                 </div>
@@ -352,7 +414,7 @@ export default function ExecutarTreino() {
                                             // Modo de visualização
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center">
-                                                    <button 
+                                                    <button
                                                         onClick={() => toggleExerciseCompletion(index)}
                                                         className={`w-6 h-6 rounded-full flex items-center justify-center mr-4 ${exercicio.completed ? 'bg-green-500 text-white' : 'border border-gray-500'}`}
                                                     >
@@ -373,22 +435,45 @@ export default function ExecutarTreino() {
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <button 
-                                                    onClick={() => startEditingExercise(index)}
-                                                    className="p-2 text-gray-400 hover:text-indigo-400 transition-colors"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                </button>
+                                                <div className="flex space-x-2">
+                                                    <button
+                                                        onClick={() => startEditingExercise(index)}
+                                                        className="p-2 text-gray-400 hover:text-indigo-400 transition-colors"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteExercise(index)}
+                                                        className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
                                 ))}
+                                {/* Botão Adicionar Exercício */}
+                                <div className="mt-6 flex justify-center">
+                                    <button
+                                        onClick={() => setShowAddExerciseForm(true)}
+                                        className="px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                        </svg>
+                                        Adicionar Exercício
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
                     </div>
-                    
+
                     {/* Botão de voltar */}
                     <div className="mt-8 flex justify-end">
                         <Link href="/User/Treinos">
@@ -436,6 +521,76 @@ export default function ExecutarTreino() {
                     )}
                 </div>
 
+                {/* Modal para adicionar exercício */}
+                {showAddExerciseForm && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-gray-800 rounded-xl border border-gray-700 max-w-md w-full">
+                            <div className="p-6 border-b border-gray-700">
+                                <h3 className="text-xl font-bold text-white">Adicionar Novo Exercício</h3>
+                            </div>
+                            <div className="p-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm text-gray-400 mb-1">Nome do Exercício</label>
+                                        <input
+                                            type="text"
+                                            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                            placeholder="Ex: Supino Reto"
+                                            value={newExercise.nome}
+                                            onChange={(e) => setNewExercise({ ...newExercise, nome: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-sm text-gray-400 mb-1">Séries</label>
+                                            <input
+                                                type="number"
+                                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                                value={newExercise.series}
+                                                onChange={(e) => setNewExercise({ ...newExercise, series: parseInt(e.target.value) || 0 })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm text-gray-400 mb-1">Repetições</label>
+                                            <input
+                                                type="text"
+                                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                                placeholder="Ex: 10-12"
+                                                value={newExercise.repeticoes}
+                                                onChange={(e) => setNewExercise({ ...newExercise, repeticoes: e.target.value })}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm text-gray-400 mb-1">Peso</label>
+                                            <input
+                                                type="text"
+                                                className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                                placeholder="Ex: 30kg"
+                                                value={newExercise.peso}
+                                                onChange={(e) => setNewExercise({ ...newExercise, peso: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="p-6 border-t border-gray-700 flex justify-end space-x-3">
+                                <button
+                                    className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+                                    onClick={() => setShowAddExerciseForm(false)}
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                                    onClick={addExercise}
+                                >
+                                    Adicionar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Footer with top separator */}
                 <footer className="bg-black text-white py-12 mt-auto border-t border-gray-700">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -481,7 +636,7 @@ export default function ExecutarTreino() {
                         </div>
                     </div>
                 </footer>
-            </div>
+            </div >
         </>
     );
 }
