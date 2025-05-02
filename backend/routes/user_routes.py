@@ -2,6 +2,8 @@
 from flask import Blueprint, request, jsonify
 from extensions import db
 from models.user import Usuario
+from datetime import datetime
+from passlib.hash import pbkdf2_sha256
 
 usuario_bp = Blueprint('usuario_bp', __name__)
 
@@ -9,18 +11,38 @@ usuario_bp = Blueprint('usuario_bp', __name__)
 @usuario_bp.route('/usuarios', methods=['POST'])
 def criar_usuario():
     dados = request.get_json()
-    if not dados or not all(k in dados for k in ("nome", "email", "senha")):
-        return jsonify({"mensagem": "Dados inválidos"}), 400
+    # Verificar se todos os campos obrigatórios estão presentes
+    if not dados or not all(k in dados for k in ("nome", "email", "senha", "data_nascimento")):
+        return jsonify({"mensagem": "Dados inválidos: nome, email, senha e data de nascimento são obrigatórios"}), 400
     
     # Verificar se o email já existe
     usuario_existente = Usuario.query.filter_by(email=dados['email']).first()
     if usuario_existente:
         return jsonify({"mensagem": "Email já está em uso"}), 400
     
+    # Processar data de nascimento
+    data_nascimento = None
+    if dados['data_nascimento']:
+        try:
+            data_nascimento = datetime.strptime(dados['data_nascimento'], '%d/%m/%Y').date()
+        except ValueError:
+            try:
+                # Tentar formato alternativo se o primeiro falhar
+                data_nascimento = datetime.strptime(dados['data_nascimento'], '%Y-%m-%d').date()
+            except ValueError:
+                return jsonify({"mensagem": "Formato de data inválido. Use DD/MM/YYYY ou YYYY-MM-DD"}), 400
+    
+    # Gerar hash da senha
+    senha_hash = Usuario.hash_senha(dados['senha'])
+    
     novo_usuario = Usuario(
         nome=dados['nome'],
         email=dados['email'],
-        senha=dados['senha']  # Em produção, esta senha deve ser criptografada!
+        senha=senha_hash,
+        data_nascimento=data_nascimento,
+        telefone=dados.get('telefone'),
+        altura=dados.get('altura'),
+        peso=dados.get('peso')
     )
     
     db.session.add(novo_usuario)
@@ -60,12 +82,49 @@ def editar_usuario(id):
     if 'email' in dados and dados['email'] != usuario.email:
         # Verificar se o novo email já está em uso
         email_existente = Usuario.query.filter_by(email=dados['email']).first()
-        if email_existente:
+        if email_existente and email_existente.id != usuario.id:
             return jsonify({"mensagem": "Email já está em uso"}), 400
         usuario.email = dados['email']
     
-    if 'senha' in dados:
-        usuario.senha = dados['senha']  # Em produção, esta senha deve ser criptografada!
+    # Processar data de nascimento se fornecida
+    if 'data_nascimento' in dados and dados['data_nascimento']:
+        try:
+            # Tenta primeiro formato DD/MM/YYYY (como mostrado na interface)
+            usuario.data_nascimento = datetime.strptime(dados['data_nascimento'], '%d/%m/%Y').date()
+        except ValueError:
+            try:
+                # Tenta formato alternativo YYYY-MM-DD
+                usuario.data_nascimento = datetime.strptime(dados['data_nascimento'], '%Y-%m-%d').date()
+            except ValueError:
+                return jsonify({"mensagem": "Formato de data inválido. Use DD/MM/YYYY ou YYYY-MM-DD"}), 400
+    
+    # Processar campos adicionais
+    if 'telefone' in dados:
+        usuario.telefone = dados['telefone']
+    
+    if 'altura' in dados:
+        # Verificar se o valor é numérico
+        try:
+            if isinstance(dados['altura'], str) and dados['altura'].endswith('m'):
+                # Se for uma string terminando com 'm', converter para float
+                altura_str = dados['altura'].rstrip('m')
+                usuario.altura = float(altura_str) * 100  # converter de metros para cm
+            else:
+                usuario.altura = float(dados['altura'])
+        except (ValueError, TypeError):
+            return jsonify({"mensagem": "Altura deve ser um valor numérico"}), 400
+    
+    if 'peso' in dados:
+        # Verificar se o valor é numérico
+        try:
+            if isinstance(dados['peso'], str) and dados['peso'].endswith('kg'):
+                # Se for uma string terminando com 'kg', converter para float
+                peso_str = dados['peso'].rstrip('kg')
+                usuario.peso = float(peso_str)
+            else:
+                usuario.peso = float(dados['peso'])
+        except (ValueError, TypeError):
+            return jsonify({"mensagem": "Peso deve ser um valor numérico"}), 400
     
     db.session.commit()
     
@@ -85,3 +144,97 @@ def remover_usuario(id):
     db.session.commit()
     
     return jsonify({"mensagem": "Usuário removido com sucesso!"})
+
+# Atualizar dados biométricos
+@usuario_bp.route('/usuarios/<int:id>/biometria', methods=['PATCH'])
+def atualizar_biometria(id):
+    usuario = Usuario.query.get(id)
+    if not usuario:
+        return jsonify({"mensagem": "Usuário não encontrado"}), 404
+    
+    dados = request.get_json()
+    
+    if 'altura' in dados:
+        try:
+            if isinstance(dados['altura'], str) and dados['altura'].endswith('m'):
+                # Se for uma string terminando com 'm', converter para float
+                altura_str = dados['altura'].rstrip('m')
+                usuario.altura = float(altura_str) * 100  # converter de metros para cm
+            else:
+                usuario.altura = float(dados['altura'])
+        except (ValueError, TypeError):
+            return jsonify({"mensagem": "Altura deve ser um valor numérico"}), 400
+    
+    if 'peso' in dados:
+        try:
+            if isinstance(dados['peso'], str) and dados['peso'].endswith('kg'):
+                # Se for uma string terminando com 'kg', converter para float
+                peso_str = dados['peso'].rstrip('kg')
+                usuario.peso = float(peso_str)
+            else:
+                usuario.peso = float(dados['peso'])
+        except (ValueError, TypeError):
+            return jsonify({"mensagem": "Peso deve ser um valor numérico"}), 400
+    
+    db.session.commit()
+    
+    return jsonify({
+        "mensagem": "Dados biométricos atualizados com sucesso!",
+        "usuario": usuario.to_dict()
+    })
+
+# Rota de login
+@usuario_bp.route('/login', methods=['POST'])
+def login():
+    dados = request.get_json()
+    
+    if not dados or not all(k in dados for k in ('email', 'senha')):
+        return jsonify({"mensagem": "Email e senha são obrigatórios"}), 400
+    
+    usuario = Usuario.query.filter_by(email=dados['email']).first()
+    
+    if not usuario or not pbkdf2_sha256.verify(dados['senha'], usuario.senha):
+        return jsonify({"mensagem": "Email ou senha inválidos"}), 401
+    
+    return jsonify({
+        "mensagem": "Login realizado com sucesso",
+        "usuario": usuario.to_dict()
+    })
+
+# Verificar disponibilidade de email
+@usuario_bp.route('/verificar-email', methods=['POST'])
+def verificar_email():
+    dados = request.get_json()
+    
+    if not dados or 'email' not in dados:
+        return jsonify({"mensagem": "Email é obrigatório"}), 400
+    
+    usuario_existente = Usuario.query.filter_by(email=dados['email']).first()
+    
+    if usuario_existente:
+        return jsonify({"disponivel": False, "mensagem": "Este email já está em uso"})
+    else:
+        return jsonify({"disponivel": True, "mensagem": "Email disponível para cadastro"})
+
+# Alterar senha
+@usuario_bp.route('/usuarios/<int:id>/alterar-senha', methods=['POST'])
+def alterar_senha(id):
+    usuario = Usuario.query.get(id)
+    if not usuario:
+        return jsonify({"mensagem": "Usuário não encontrado"}), 404
+    
+    dados = request.get_json()
+    
+    # Verificar se todos os campos necessários estão presentes
+    if not dados or not all(k in dados for k in ('senha_atual', 'nova_senha')):
+        return jsonify({"mensagem": "Senha atual e nova senha são obrigatórios"}), 400
+    
+    # Verificar se a senha atual está correta
+    if not pbkdf2_sha256.verify(dados['senha_atual'], usuario.senha):
+        return jsonify({"mensagem": "Senha atual incorreta"}), 401
+    
+    # Atualizar a senha
+    usuario.senha = pbkdf2_sha256.hash(dados['nova_senha'])
+    db.session.commit()
+    
+    return jsonify({"mensagem": "Senha alterada com sucesso"})
