@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // Update import to next/navigation
 import Head from 'next/head';
 import Link from 'next/link';
 
@@ -8,12 +9,36 @@ export default function Entrar() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const router = useRouter(); // Initialize useRouter from next/navigation
 
-
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement sign in logic here
-    console.log({ email, password, rememberMe });
+
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, senha: password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.mensagem || 'Erro ao realizar login.');
+        return;
+      }
+
+      const data = await response.json();
+      alert('Login realizado com sucesso!');
+      console.log(data);
+
+      // Redirect to the user page
+      router.push('/User'); // Redirect to the user page
+    } catch (error) {
+      console.error('Erro ao conectar com o servidor:', error);
+      alert('Erro ao conectar com o servidor.');
+    }
   };
 
   return (
