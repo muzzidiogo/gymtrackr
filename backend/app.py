@@ -1,7 +1,9 @@
 # app.py
 from flask import Flask
 from extensions import db, migrate, cors
-from models.user import Usuario
+
+# Importe todos os modelos aqui de uma vez
+from models import Usuario, Exercicio, SessaoTreino, ExercicioSessao
 
 def criar_app():
     app = Flask(__name__)
@@ -17,7 +19,12 @@ def criar_app():
     
     # Registrar blueprints
     from routes.user_routes import usuario_bp
+    from routes.exercise_routes import exercicio_bp
+    from routes.session_routes import sessao_bp
+    
     app.register_blueprint(usuario_bp, url_prefix='/api')
+    app.register_blueprint(exercicio_bp, url_prefix='/api')
+    app.register_blueprint(sessao_bp, url_prefix='/api')
     
     @app.route('/')
     def home():
