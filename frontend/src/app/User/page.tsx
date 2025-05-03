@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
-const userData = {
+const dummyUserData = {
     nome: "Carlos Silva",
     email: "carlos.silva@email.com",
     dataCadastro: "15/01/2025",
@@ -25,6 +25,37 @@ const userData = {
 
 export default function Home() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [userData, setUserData] = useState(dummyUserData);
+
+    useEffect(() => {
+        async function fetchUserData() {
+            try {
+                const response = await fetch('http://localhost:5000/api/usuarios/1', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserData({
+                        nome: data.nome,
+                        email: data.email,
+                        dataCadastro: data.data_criacao,
+                        ultimoTreino: dummyUserData.ultimoTreino,
+                        meta: dummyUserData.meta,
+                        treinos: dummyUserData.treinos,
+                        estatisticas: dummyUserData.estatisticas
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados do usuário:", error);
+            }
+        }
+
+        fetchUserData();
+    }, []);
 
     return (
         <>

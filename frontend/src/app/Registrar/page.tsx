@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter
 import Head from 'next/head';
 import Link from 'next/link';
 import React from 'react';
@@ -12,11 +13,65 @@ export default function Registro() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [dataNascimento, setDataNascimento] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const router = useRouter(); // Initialize useRouter
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
-    // Implement registration logic here
-    console.log({ nome, email, password, confirmPassword, dataNascimento, termsAccepted });
+
+    if (password !== confirmPassword) {
+      alert("As senhas não coincidem.");
+      return;
+    }
+
+    const payload = {
+      nome,
+      email,
+      senha: password,
+      data_nascimento: dataNascimento,
+    };
+
+    try {
+      const response = await fetch('http://localhost:5000/api/usuarios', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(errorData.mensagem || "Erro ao criar conta.");
+        return;
+      }
+
+      const data = await response.json();
+      alert("Conta criada com sucesso!");
+
+      // Automatically log in the user
+      const loginResponse = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, senha: password }),
+      });
+
+      if (!loginResponse.ok) {
+        alert("Conta criada, mas falha ao realizar login.");
+        return;
+      }
+
+      const loginData = await loginResponse.json();
+      alert("Login realizado com sucesso!");
+      console.log(loginData);
+
+      // Redirect to the dashboard
+      router.push('/User');
+    } catch (error) {
+      console.error("Erro ao conectar com o servidor:", error);
+      alert("Erro ao conectar com o servidor.");
+    }
   };
 
   return (

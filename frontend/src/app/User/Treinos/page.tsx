@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
-const userData = {
-    nome: "Carlos Silva",
-    email: "carlos.silva@email.com"
-};
+interface UserData {
+    nome: string;
+    email: string;
+}
 
 interface Workout {
     id: number;
@@ -69,6 +69,7 @@ const initialWorkouts = [
 export default function Treinos() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [workouts, setWorkouts] = useState<Workout[]>(initialWorkouts);
+    const [userData, setUserData] = useState<UserData | null>(null);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [workoutToDelete, setWorkoutToDelete] = useState<number | null>(null);
     const emptyWorkout = {
@@ -88,6 +89,31 @@ export default function Treinos() {
         exercicios: [{ nome: "", series: 3, repeticoes: "", peso: "" }]
     });
     const [currentWorkoutId, setCurrentWorkoutId] = useState<number | null>(null);
+
+    useEffect(() => {
+        async function fetchUserData() {
+            try {
+                const response = await fetch('http://localhost:5000/api/usuarios/1', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setUserData({
+                        nome: data.nome,
+                        email: data.email,
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados do usuário:", error);
+            }
+        }
+
+        fetchUserData();
+    }, []);
 
     // Manipuladores para adicionar treino
     const handleAddWorkout = () => {
@@ -236,9 +262,9 @@ export default function Treinos() {
                                 <div className="relative group">
                                     <button className="flex items-center space-x-2 px-3 py-2 rounded-lg border border-indigo-500 hover:bg-gray-700 transition-colors">
                                         <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium">
-                                            {userData.nome.charAt(0)}
+                                            {userData?.nome.charAt(0) || "?"}
                                         </div>
-                                        <span className="text-gray-300">{userData.nome}</span>
+                                        <span className="text-gray-300">{userData?.nome || "Usuário"}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
