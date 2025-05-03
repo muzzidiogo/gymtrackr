@@ -14,6 +14,9 @@ class Usuario(db.Model):
     peso = db.Column(db.Float, nullable=True)    # em quilogramas
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     
+    # Relacionamento com sessões de treino
+    sessoes_treino = db.relationship('SessaoTreino', back_populates='usuario', cascade='all, delete-orphan')
+    
     def to_dict(self):
         return {
             "id": self.id, 
