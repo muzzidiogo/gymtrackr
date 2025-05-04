@@ -16,6 +16,7 @@ class Usuario(db.Model):
     
     # Relacionamento com sessões de treino
     sessoes_treino = db.relationship('SessaoTreino', back_populates='usuario', cascade='all, delete-orphan')
+    tempos = db.relationship("TempoTreino", back_populates="usuario")
     
     def to_dict(self):
         return {
