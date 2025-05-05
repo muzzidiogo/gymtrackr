@@ -15,20 +15,19 @@ class Usuario(db.Model):
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Relacionamentos
-    sessoes_treino = db.relationship('SessaoTreino', back_populates='usuario', cascade='all, delete-orphan')
-    tempos = db.relationship("TempoTreino", back_populates="usuario", cascade='all, delete-orphan')
-    # O backref 'timers_sessao' é definido no model TimerSessao
+    sessoes = db.relationship('SessaoTreino', back_populates='usuario', cascade='all, delete-orphan')
+    timers_sessao = db.relationship('TimerSessao', back_populates='usuario', cascade='all, delete-orphan')
+    tempos = db.relationship('TempoTreino', back_populates='usuario', cascade='all, delete-orphan')
     
     def to_dict(self):
         return {
-            "id": self.id, 
-            "nome": self.nome, 
+            "id": self.id,
+            "nome": self.nome,
             "email": self.email,
-            "data_nascimento": self.data_nascimento.strftime('%d/%m/%Y') if self.data_nascimento else None,
+            "data_nascimento": self.data_nascimento.strftime('%Y-%m-%d') if self.data_nascimento else None,
             "telefone": self.telefone,
-            "altura": round(self.altura, 2) if self.altura is not None else None,
-            "peso": round(self.peso, 2) if self.peso is not None else None,
-            "data_criacao": self.data_criacao.strftime('%Y-%m-%d %H:%M:%S')
+            "altura": self.altura,
+            "peso": self.peso
         }
     
     @staticmethod
