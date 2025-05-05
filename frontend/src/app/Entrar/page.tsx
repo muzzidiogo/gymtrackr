@@ -100,16 +100,6 @@ export default function Entrar() {
                         <label htmlFor="password" className="block text-sm font-medium text-gray-300">
                           Senha
                         </label>
-                        <a
-                          href="/esqueci-senha"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            alert("Verifique seu e-mail para redefinir a senha.");
-                          }}
-                          className="text-sm text-indigo-400 hover:text-indigo-300"
-                        >
-                          Esqueceu a senha?
-                        </a>
                       </div>
                       <input
                         id="password"

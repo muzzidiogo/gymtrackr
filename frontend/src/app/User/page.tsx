@@ -11,45 +11,45 @@ const dummyUserData = {
     ultimoTreino: "08/04/2025",
     meta: "Perda de peso",
     treinos: [
-        { 
-            id: 1, 
-            nome: "Peito e Tríceps", 
-            musculo_primario: "Peito", 
-            musculo_secundario: "Tríceps, Ombros", 
-            descricao: null, 
-            series: 4, 
-            repeticoes: 12, 
-            peso: 60 
+        {
+            id: 1,
+            nome: "Peito e Tríceps",
+            musculo_primario: "Peito",
+            musculo_secundario: "Tríceps, Ombros",
+            descricao: null,
+            series: 4,
+            repeticoes: 12,
+            peso: 60
         },
-        { 
-            id: 2, 
-            nome: "Pernas", 
-            musculo_primario: "Quadríceps", 
-            musculo_secundario: "Glúteos", 
-            descricao: null, 
-            series: 5, 
-            repeticoes: 10, 
-            peso: 80 
+        {
+            id: 2,
+            nome: "Pernas",
+            musculo_primario: "Quadríceps",
+            musculo_secundario: "Glúteos",
+            descricao: null,
+            series: 5,
+            repeticoes: 10,
+            peso: 80
         },
-        { 
-            id: 3, 
-            nome: "Costas e Bíceps", 
-            musculo_primario: "Costas", 
-            musculo_secundario: "Bíceps", 
-            descricao: null, 
-            series: 3, 
-            repeticoes: 15, 
-            peso: 50 
+        {
+            id: 3,
+            nome: "Costas e Bíceps",
+            musculo_primario: "Costas",
+            musculo_secundario: "Bíceps",
+            descricao: null,
+            series: 3,
+            repeticoes: 15,
+            peso: 50
         },
-        { 
-            id: 4, 
-            nome: "Ombros", 
-            musculo_primario: "Ombros", 
-            musculo_secundario: "Trapézio", 
-            descricao: null, 
-            series: 4, 
-            repeticoes: 10, 
-            peso: 40 
+        {
+            id: 4,
+            nome: "Ombros",
+            musculo_primario: "Ombros",
+            musculo_secundario: "Trapézio",
+            descricao: null,
+            series: 4,
+            repeticoes: 10,
+            peso: 40
         }
     ],
     estatisticas: {
@@ -79,7 +79,7 @@ export default function Home() {
     useEffect(() => {
         async function fetchUserData() {
             try {
-                const userId = localStorage.getItem('userId'); 
+                const userId = localStorage.getItem('userId');
 
                 if (!userId) {
                     console.error("User ID not found");
@@ -91,14 +91,14 @@ export default function Home() {
                     headers: { 'Content-Type': 'application/json' },
                 });
 
-                if(!userResponse.ok){
+                if (!userResponse.ok) {
                     console.error("Failed to fetch user data");
                 }
 
                 const sessionsResponse = await fetch(`http://localhost:5000/api/usuarios/${userId}/sessoes`);
                 if (!sessionsResponse.ok) {
                     console.error("Failed to fetch sessions");
-                } 
+                }
 
                 const userData = await userResponse.json();
                 const sessionsData = await sessionsResponse.json();
@@ -123,7 +123,7 @@ export default function Home() {
                     ), // Map session data correctly
                     estatisticas: dummyUserData.estatisticas, // Replace with actual stats if available
                 });
-                
+
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -254,58 +254,19 @@ export default function Home() {
                                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-500">Seu Desempenho</span>
                             </h2>
 
-                            {/* Cards de estatísticas com efeito de glassmorphism */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-                                {/* Card de Treinos Totais */}
-                                <div className="bg-gray-800/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 transform hover:-translate-y-1">
-                                    <div className="flex flex-col items-center">
-                                        <div className="w-16 h-16 rounded-full bg-indigo-500/20 flex items-center justify-center mb-4">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                            </svg>
+                            <div className="mb-16">
+                                <div className="bg-gray-800/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300">
+                                    <div className="text-center">
+                                        <h3 className="text-2xl font-bold text-indigo-300 mb-4">Estatísticas</h3>
+                                        <div className="flex flex-col items-center justify-center space-y-4">
+                                            <div className="w-16 h-16 rounded-full bg-indigo-600/20 flex items-center justify-center">
+                                                <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-gray-400 text-lg">Em desenvolvimento</p>
+                                            <p className="text-gray-500">Esta funcionalidade estará disponível em breve!</p>
                                         </div>
-                                        <div className="text-5xl text-indigo-400 font-bold mb-2">{userData.estatisticas.treinosTotal}</div>
-                                        <div className="text-gray-300 mb-4 font-medium">Treinos Totais</div>
-                                        <div className="w-full bg-gray-700/50 h-3 rounded-full overflow-hidden">
-                                            <div className="bg-gradient-to-r from-indigo-500 to-indigo-400 h-3 rounded-full w-3/4"></div>
-                                        </div>
-                                        <div className="text-sm text-gray-400 mt-3">75% do objetivo mensal</div>
-                                    </div>
-                                </div>
-
-                                {/* Card de Dias Consecutivos */}
-                                <div className="bg-gray-800/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 transform hover:-translate-y-1">
-                                    <div className="flex flex-col items-center">
-                                        <div className="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center mb-4">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                            </svg>
-                                        </div>
-                                        <div className="text-5xl text-purple-400 font-bold mb-2">{userData.estatisticas.diasConsecutivos}</div>
-                                        <div className="text-gray-300 mb-4 font-medium">Dias Consecutivos</div>
-                                        <div className="flex space-x-2 mt-2">
-                                            {[...Array(7)].map((_, i) => (
-                                                <div key={i} className={`w-4 h-4 rounded-full ${i < userData.estatisticas.diasConsecutivos % 7 ? 'bg-gradient-to-r from-purple-500 to-purple-400 shadow-glow-purple' : 'bg-gray-700/50'} transition-all duration-300`}></div>
-                                            ))}
-                                        </div>
-                                        <div className="text-sm text-gray-400 mt-3">Semana atual</div>
-                                    </div>
-                                </div>
-
-                                {/* Card de Minutos por Treino */}
-                                <div className="bg-gray-800/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 transform hover:-translate-y-1">
-                                    <div className="flex flex-col items-center">
-                                        <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mb-4">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                        </div>
-                                        <div className="text-5xl text-blue-400 font-bold mb-2">{userData.estatisticas.mediaMinutos}</div>
-                                        <div className="text-gray-300 mb-4 font-medium">Minutos/Treino</div>
-                                        <div className="w-full bg-gray-700/50 h-3 rounded-full overflow-hidden">
-                                            <div className="bg-gradient-to-r from-blue-500 to-blue-400 h-3 rounded-full w-4/5"></div>
-                                        </div>
-                                        <div className="text-sm text-gray-400 mt-3">Meta: 75 min</div>
                                     </div>
                                 </div>
                             </div>
@@ -393,48 +354,14 @@ export default function Home() {
                                     <span className="mr-2">🏆</span> Desafios em Destaque
                                 </h3>
 
-                                <div className="space-y-4">
-                                    <div className="bg-gray-700/50 p-4 rounded-lg border border-gray-600">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <h4 className="font-semibold text-indigo-200">Desafio de 30 dias</h4>
-                                            <span className="bg-indigo-900/70 text-indigo-300 text-xs px-2 py-1 rounded">3428 participantes</span>
-                                        </div>
-                                        <p className="text-gray-400 text-sm mb-3">Complete 30 dias consecutivos de treino e ganhe emblemas exclusivos.</p>
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex -space-x-2">
-                                                {[...Array(4)].map((_, i) => (
-                                                    <div key={i} className="w-6 h-6 rounded-full bg-gray-500 border border-gray-700"></div>
-                                                ))}
-                                                <div className="w-6 h-6 rounded-full bg-gray-600 border border-gray-700 flex items-center justify-center text-xs">+</div>
-                                            </div>
-                                            <button className="text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded">Participar</button>
-                                        </div>
+                                <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                                    <div className="w-16 h-16 rounded-full bg-indigo-600/20 flex items-center justify-center">
+                                        <svg className="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                        </svg>
                                     </div>
-
-                                    <div className="bg-gray-700/50 p-4 rounded-lg border border-gray-600">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <h4 className="font-semibold text-purple-200">Supere seus limites</h4>
-                                            <span className="bg-purple-900/70 text-purple-300 text-xs px-2 py-1 rounded">1205 participantes</span>
-                                        </div>
-                                        <p className="text-gray-400 text-sm mb-3">Aumente 10% nos seus pesos em todos os exercícios este mês.</p>
-                                        <div className="flex justify-between items-center">
-                                            <div className="flex -space-x-2">
-                                                {[...Array(3)].map((_, i) => (
-                                                    <div key={i} className="w-6 h-6 rounded-full bg-gray-500 border border-gray-700"></div>
-                                                ))}
-                                                <div className="w-6 h-6 rounded-full bg-gray-600 border border-gray-700 flex items-center justify-center text-xs">+</div>
-                                            </div>
-                                            <button className="text-sm bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded">Participar</button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 text-center">
-                                    <Link href="/User/Comunidade/Desafios">
-                                        <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg font-medium text-sm">
-                                            Ver todos os desafios
-                                        </button>
-                                    </Link>
+                                    <p className="text-gray-400 text-lg">Em desenvolvimento</p>
+                                    <p className="text-gray-500">Os desafios da comunidade estarão disponíveis em breve!</p>
                                 </div>
                             </div>
 
@@ -444,61 +371,14 @@ export default function Home() {
                                     <span className="mr-2">👥</span> Amigos Ativos
                                 </h3>
 
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between p-2 hover:bg-gray-700/30 rounded">
-                                        <div className="flex items-center">
-                                            <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center text-white mr-3">M</div>
-                                            <div>
-                                                <div className="text-gray-300">Marcos</div>
-                                                <div className="text-xs text-gray-500">Treino há 2h</div>
-                                            </div>
-                                        </div>
-                                        <div className="text-gray-400 text-sm font-medium">Nível 18</div>
+                                <div className="flex flex-col items-center justify-center py-8 space-y-4">
+                                    <div className="w-16 h-16 rounded-full bg-purple-600/20 flex items-center justify-center">
+                                        <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                        </svg>
                                     </div>
-
-                                    <div className="flex items-center justify-between p-2 hover:bg-gray-700/30 rounded">
-                                        <div className="flex items-center">
-                                            <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center text-white mr-3">A</div>
-                                            <div>
-                                                <div className="text-gray-300">Ana</div>
-                                                <div className="text-xs text-gray-500">Treino hoje</div>
-                                            </div>
-                                        </div>
-                                        <div className="text-gray-400 text-sm font-medium">Nível 22</div>
-                                    </div>
-
-                                    <div className="flex items-center justify-between p-2 hover:bg-gray-700/30 rounded">
-                                        <div className="flex items-center">
-                                            <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-3">R</div>
-                                            <div>
-                                                <div className="text-gray-300">Rafael</div>
-                                                <div className="text-xs text-gray-500">Treino ontem</div>
-                                            </div>
-                                        </div>
-                                        <div className="text-gray-400 text-sm font-medium">Nível 15</div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 border-t border-gray-700 pt-4">
-                                    <h4 className="text-sm font-medium text-gray-400 mb-3">Sua posição no ranking</h4>
-                                    <div className="bg-gray-700/50 p-3 rounded-lg flex items-center justify-between">
-                                        <div className="flex items-center">
-                                            <div className="text-indigo-300 font-bold mr-3">#42</div>
-                                            <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white mr-2">
-                                                {userData.nome.charAt(0)}
-                                            </div>
-                                            <div className="text-gray-300">Você</div>
-                                        </div>
-                                        <div className="text-gray-300 font-medium">Nível 12</div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 text-center">
-                                    <Link href="/User/Comunidade">
-                                        <button className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg font-medium text-sm">
-                                            Ver comunidade
-                                        </button>
-                                    </Link>
+                                    <p className="text-gray-400 text-lg">Em desenvolvimento</p>
+                                    <p className="text-gray-500">O sistema de amigos estará disponível em breve!</p>
                                 </div>
                             </div>
                         </div>
