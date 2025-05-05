@@ -6,27 +6,49 @@ from models.exercise import Exercicio
 from models.session_exercise import ExercicioSessao
 from models.user import Usuario
 from datetime import datetime
+from functools import wraps
 
 sessao_bp = Blueprint('sessao_bp', __name__)
 
+# Decorator para verificar se o usuário tem acesso à sessão
+def verificar_propriedade_sessao(f):
+    @wraps(f)
+    def decorated_function(usuario_id, sessao_id, *args, **kwargs):
+        # Verificar se o usuário existe
+        usuario = Usuario.query.get(usuario_id)
+        if not usuario:
+            return jsonify({"mensagem": "Usuário não encontrado"}), 404
+        
+        # Verificar se a sessão existe
+        sessao = SessaoTreino.query.get(sessao_id)
+        if not sessao:
+            return jsonify({"mensagem": "Sessão de treino não encontrada"}), 404
+        
+        # Verificar se a sessão pertence ao usuário
+        if sessao.usuario_id != usuario_id:
+            return jsonify({"mensagem": "Acesso negado: esta sessão não pertence a este usuário"}), 403
+        
+        return f(usuario_id, sessao_id, *args, **kwargs)
+    return decorated_function
+
 # Criar uma nova sessão de treino
-@sessao_bp.route('/sessoes', methods=['POST'])
-def criar_sessao():
+@sessao_bp.route('/usuarios/<int:usuario_id>/sessoes', methods=['POST'])
+def criar_sessao(usuario_id):
     dados = request.get_json()
     
-    # Verificar se todos os campos obrigatórios estão presentes
-    if not dados or not all(k in dados for k in ("nome", "usuario_id")):
-        return jsonify({"mensagem": "Dados inválidos: nome e usuario_id são obrigatórios"}), 400
-    
     # Verificar se o usuário existe
-    usuario = Usuario.query.get(dados['usuario_id'])
+    usuario = Usuario.query.get(usuario_id)
     if not usuario:
         return jsonify({"mensagem": "Usuário não encontrado"}), 404
+    
+    # Verificar se o nome da sessão foi fornecido
+    if not dados or 'nome' not in dados:
+        return jsonify({"mensagem": "Dados inválidos: nome é obrigatório"}), 400
     
     # Criar nova sessão de treino
     nova_sessao = SessaoTreino(
         nome=dados['nome'],
-        usuario_id=dados['usuario_id']
+        usuario_id=usuario_id
     )
     
     db.session.add(nova_sessao)
@@ -50,21 +72,17 @@ def listar_sessoes(usuario_id):
     return jsonify([sessao.to_dict() for sessao in sessoes])
 
 # Obter uma sessão de treino específica
-@sessao_bp.route('/sessoes/<int:id>', methods=['GET'])
-def obter_sessao(id):
-    sessao = SessaoTreino.query.get(id)
-    if not sessao:
-        return jsonify({"mensagem": "Sessão de treino não encontrada"}), 404
-    
+@sessao_bp.route('/usuarios/<int:usuario_id>/sessoes/<int:sessao_id>', methods=['GET'])
+@verificar_propriedade_sessao
+def obter_sessao(usuario_id, sessao_id):
+    sessao = SessaoTreino.query.get(sessao_id)
     return jsonify(sessao.to_dict())
 
 # Atualizar uma sessão de treino
-@sessao_bp.route('/sessoes/<int:id>', methods=['PUT'])
-def editar_sessao(id):
-    sessao = SessaoTreino.query.get(id)
-    if not sessao:
-        return jsonify({"mensagem": "Sessão de treino não encontrada"}), 404
-    
+@sessao_bp.route('/usuarios/<int:usuario_id>/sessoes/<int:sessao_id>', methods=['PUT'])
+@verificar_propriedade_sessao
+def editar_sessao(usuario_id, sessao_id):
+    sessao = SessaoTreino.query.get(sessao_id)
     dados = request.get_json()
     
     # Atualizar nome da sessão se fornecido
@@ -80,11 +98,10 @@ def editar_sessao(id):
     })
 
 # Excluir uma sessão de treino
-@sessao_bp.route('/sessoes/<int:id>', methods=['DELETE'])
-def remover_sessao(id):
-    sessao = SessaoTreino.query.get(id)
-    if not sessao:
-        return jsonify({"mensagem": "Sessão de treino não encontrada"}), 404
+@sessao_bp.route('/usuarios/<int:usuario_id>/sessoes/<int:sessao_id>', methods=['DELETE'])
+@verificar_propriedade_sessao
+def remover_sessao(usuario_id, sessao_id):
+    sessao = SessaoTreino.query.get(sessao_id)
     
     db.session.delete(sessao)
     db.session.commit()
@@ -92,12 +109,10 @@ def remover_sessao(id):
     return jsonify({"mensagem": "Sessão de treino removida com sucesso!"})
 
 # Adicionar exercício a uma sessão de treino
-@sessao_bp.route('/sessoes/<int:sessao_id>/exercicios', methods=['POST'])
-def adicionar_exercicio(sessao_id):
+@sessao_bp.route('/usuarios/<int:usuario_id>/sessoes/<int:sessao_id>/exercicios', methods=['POST'])
+@verificar_propriedade_sessao
+def adicionar_exercicio(usuario_id, sessao_id):
     sessao = SessaoTreino.query.get(sessao_id)
-    if not sessao:
-        return jsonify({"mensagem": "Sessão de treino não encontrada"}), 404
-    
     dados = request.get_json()
     
     # Verificar se todos os campos obrigatórios estão presentes
@@ -136,11 +151,10 @@ def adicionar_exercicio(sessao_id):
     }), 201
 
 # Remover exercício de uma sessão de treino
-@sessao_bp.route('/sessoes/<int:sessao_id>/exercicios/<int:exercicio_sessao_id>', methods=['DELETE'])
-def remover_exercicio(sessao_id, exercicio_sessao_id):
+@sessao_bp.route('/usuarios/<int:usuario_id>/sessoes/<int:sessao_id>/exercicios/<int:exercicio_sessao_id>', methods=['DELETE'])
+@verificar_propriedade_sessao
+def remover_exercicio(usuario_id, sessao_id, exercicio_sessao_id):
     sessao = SessaoTreino.query.get(sessao_id)
-    if not sessao:
-        return jsonify({"mensagem": "Sessão de treino não encontrada"}), 404
     
     exercicio_sessao = ExercicioSessao.query.get(exercicio_sessao_id)
     if not exercicio_sessao or exercicio_sessao.sessao_id != sessao_id:
@@ -165,11 +179,10 @@ def remover_exercicio(sessao_id, exercicio_sessao_id):
     return jsonify({"mensagem": "Exercício removido da sessão com sucesso!"})
 
 # Atualizar detalhes de um exercício em uma sessão (séries, repetições, peso, etc.)
-@sessao_bp.route('/sessoes/<int:sessao_id>/exercicios/<int:exercicio_sessao_id>', methods=['PUT'])
-def atualizar_exercicio_sessao(sessao_id, exercicio_sessao_id):
+@sessao_bp.route('/usuarios/<int:usuario_id>/sessoes/<int:sessao_id>/exercicios/<int:exercicio_sessao_id>', methods=['PUT'])
+@verificar_propriedade_sessao
+def atualizar_exercicio_sessao(usuario_id, sessao_id, exercicio_sessao_id):
     sessao = SessaoTreino.query.get(sessao_id)
-    if not sessao:
-        return jsonify({"mensagem": "Sessão de treino não encontrada"}), 404
     
     exercicio_sessao = ExercicioSessao.query.get(exercicio_sessao_id)
     if not exercicio_sessao or exercicio_sessao.sessao_id != sessao_id:
@@ -232,11 +245,10 @@ def atualizar_exercicio_sessao(sessao_id, exercicio_sessao_id):
     })
 
 # Marcar/desmarcar exercício como completado
-@sessao_bp.route('/sessoes/<int:sessao_id>/exercicios/<int:exercicio_sessao_id>/completar', methods=['PATCH'])
-def marcar_exercicio_completado(sessao_id, exercicio_sessao_id):
+@sessao_bp.route('/usuarios/<int:usuario_id>/sessoes/<int:sessao_id>/exercicios/<int:exercicio_sessao_id>/completar', methods=['PATCH'])
+@verificar_propriedade_sessao
+def marcar_exercicio_completado(usuario_id, sessao_id, exercicio_sessao_id):
     sessao = SessaoTreino.query.get(sessao_id)
-    if not sessao:
-        return jsonify({"mensagem": "Sessão de treino não encontrada"}), 404
     
     exercicio_sessao = ExercicioSessao.query.get(exercicio_sessao_id)
     if not exercicio_sessao or exercicio_sessao.sessao_id != sessao_id:
@@ -259,3 +271,20 @@ def marcar_exercicio_completado(sessao_id, exercicio_sessao_id):
         "mensagem": f"Exercício {'completado' if exercicio_sessao.completado else 'desmarcado'} com sucesso!",
         "exercicio_sessao": exercicio_sessao.to_dict()
     })
+
+# Manter compatibilidade com rotas antigas (opcional) - podem ser removidas após migração completa
+@sessao_bp.route('/sessoes', methods=['POST'])
+def criar_sessao_legado():
+    dados = request.get_json()
+    if not dados or not all(k in dados for k in ("nome", "usuario_id")):
+        return jsonify({"mensagem": "Dados inválidos: nome e usuario_id são obrigatórios"}), 400
+    
+    return criar_sessao(dados['usuario_id'])
+
+@sessao_bp.route('/sessoes/<int:sessao_id>', methods=['GET'])
+def obter_sessao_legado(sessao_id):
+    sessao = SessaoTreino.query.get(sessao_id)
+    if not sessao:
+        return jsonify({"mensagem": "Sessão de treino não encontrada"}), 404
+    
+    return jsonify(sessao.to_dict())
