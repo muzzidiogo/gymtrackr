@@ -18,13 +18,7 @@ export default function UserProfile() {
     const [formData, setFormData] = useState(dummyUserData);
     const [editMode, setEditMode] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
-    const [showPasswordForm, setShowPasswordForm] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const [passwordFormData, setPasswordFormData] = useState({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: ""
-    });
     const [deletePassword, setDeletePassword] = useState("");
 
     useEffect(() => {
@@ -69,64 +63,76 @@ export default function UserProfile() {
           [name]: type === 'checkbox' ? checked : value
         });
       };
-      
-      const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setPasswordFormData({
-          ...passwordFormData,
-          [name]: value
-        });
-      };
 
       const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // Simulação de salvar os dados
-                setTimeout(() => {
+        try {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                console.error("User ID not found");
+                return;
+            }
+
+            const response = await fetch(`http://localhost:5000/api/usuarios/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome: formData.nome,
+                    email: formData.email,
+                    telefone: formData.telefone,
+                    data_nascimento: formData.dataNascimento,
+                    altura: formData.altura.endsWith('m') ? parseFloat(formData.altura) * 100 : parseFloat(formData.altura),
+                    peso: formData.peso.endsWith('kg') ? parseFloat(formData.peso) : parseFloat(formData.peso),
+                }),
+            });
+
+            if (response.ok) {
                 setEditMode(false);
-            setSuccessMessage("Dados atualizados com sucesso!");
-          
-          // Limpar mensagem após 3 segundos
-          setTimeout(() => {
-            setSuccessMessage("");
-          }, 3000);
-        }, 500);
-      };
-
-      const handlePasswordSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-// Simulação de alteração de senha
-        setTimeout(() => {
-          setShowPasswordForm(false);
-          setPasswordFormData({
-            currentPassword: "",
-            newPassword: "",
-            confirmPassword: ""
-          });
-          setSuccessMessage("Senha alterada com sucesso!");
-
-          // Limpar mensagem após 3 segundos
-          setTimeout(() => {
-            setSuccessMessage("");
-          }, 3000);
-        }, 500);
+                setSuccessMessage("Dados atualizados com sucesso!");
+                setTimeout(() => setSuccessMessage(""), 3000);
+            } else {
+                console.error("Erro ao atualizar os dados");
+            }
+        } catch (error) {
+            console.error("Erro ao salvar os dados:", error);
+        }
       };
 
       const handleDeleteChange = (e: ChangeEvent<HTMLInputElement>) => {
         setDeletePassword(e.target.value);
       };
 
-      const handleDeleteSubmit = (e: FormEvent<HTMLFormElement>) => {
+      const handleDeleteSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-// Simulação de exclusão de conta
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 1000);
+        try {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                console.error("User ID not found");
+                return;
+            }
+
+            const response = await fetch(`http://localhost:5000/api/usuarios/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                window.location.href = "/";
+            } else {
+                console.error("Erro ao excluir a conta");
+            }
+        } catch (error) {
+            console.error("Erro ao excluir a conta:", error);
+        }
       };
 
       const showDeleteConfirmation = () => {
         setShowDeleteConfirm(true);
         setEditMode(false);
-        setShowPasswordForm(false);
       };
 
       const cancelDelete = () => {
@@ -247,20 +253,12 @@ export default function UserProfile() {
                                 </div>
                                 <div className="mt-8 space-y-3">
                                     <button 
-                                        onClick={() => { setEditMode(!editMode); setShowPasswordForm(false); setShowDeleteConfirm(false); }} 
+                                        onClick={() => { setEditMode(!editMode); setShowDeleteConfirm(false); }} 
                                         className={`w-full py-3 rounded-lg font-medium shadow-lg ${editMode 
                                             ? "bg-gray-700 text-gray-300 hover:bg-gray-600" 
                                             : "bg-gradient-to-r from-indigo-600 to-indigo-500 text-white hover:opacity-90"} 
                                             transition-all`}>
                                         {editMode ? "Cancelar Edição" : "Editar Dados"}
-                                    </button>
-                                    <button 
-                                        onClick={() => { setShowPasswordForm(!showPasswordForm); setEditMode(false); setShowDeleteConfirm(false); }} 
-                                        className={`w-full py-3 rounded-lg font-medium shadow-lg ${showPasswordForm 
-                                            ? "bg-gray-700 text-gray-300 hover:bg-gray-600" 
-                                            : "bg-gradient-to-r from-purple-600 to-purple-500 text-white hover:opacity-90"} 
-                                            transition-all`}>
-                                        {showPasswordForm ? "Cancelar" : "Alterar Senha"}
                                     </button>
                                     <button 
                                         onClick={showDeleteConfirmation} 
@@ -270,7 +268,7 @@ export default function UserProfile() {
                                 </div>
                             </div>
                             <div className="md:w-2/3 p-8">
-                                {!showPasswordForm && !showDeleteConfirm ? (
+                                {!showDeleteConfirm ? (
                                     <form onSubmit={handleSubmit}>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
@@ -368,53 +366,6 @@ export default function UserProfile() {
                                                 </button>
                                             </div>
                                         )}
-                                    </form>
-                                ) : showPasswordForm ? (
-                                    <form onSubmit={handlePasswordSubmit}>
-                                        <h3 className="text-xl font-bold text-white mb-6">Alterar Senha</h3>
-                                        <div className="space-y-5">
-                                            <div>
-                                                <label className="block text-gray-400 text-sm font-medium mb-2">Senha Atual</label>
-                                                <input 
-                                                    type="password" 
-                                                    name="currentPassword" 
-                                                    value={passwordFormData.currentPassword} 
-                                                    onChange={handlePasswordChange}
-                                                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-indigo-500 focus:outline-none"
-                                                    required
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-gray-400 text-sm font-medium mb-2">Nova Senha</label>
-                                                <input 
-                                                    type="password" 
-                                                    name="newPassword" 
-                                                    value={passwordFormData.newPassword} 
-                                                    onChange={handlePasswordChange}
-                                                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-indigo-500 focus:outline-none"
-                                                    required
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-gray-400 text-sm font-medium mb-2">Confirmar Nova Senha</label>
-                                                <input 
-                                                    type="password" 
-                                                    name="confirmPassword" 
-                                                    value={passwordFormData.confirmPassword} 
-                                                    onChange={handlePasswordChange}
-                                                    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white focus:border-indigo-500 focus:outline-none"
-                                                    required
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="mt-8 flex justify-end">
-                                            <button 
-                                                type="submit" 
-                                                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:opacity-90 transition-all shadow-lg shadow-purple-500/20"
-                                            >
-                                                Atualizar Senha
-                                            </button>
-                                        </div>
                                     </form>
                                 ) : (
                                     <div>
