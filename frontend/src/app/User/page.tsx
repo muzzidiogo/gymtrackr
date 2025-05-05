@@ -274,7 +274,7 @@ export default function Home() {
                             {/* Últimos treinos - Tabela melhorada */}
                             <div className="bg-gray-800/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl border border-gray-700/50 hover:border-gray-600/50 transition-all duration-300">
                                 <div className="flex justify-between items-center mb-6">
-                                    <h3 className="text-2xl font-bold text-indigo-300">Últimos Treinos</h3>
+                                    <h3 className="text-2xl font-bold text-indigo-300">Últimos Exercícios</h3>
                                     <div className="bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full text-sm font-medium">
                                         Semana Atual
                                     </div>
