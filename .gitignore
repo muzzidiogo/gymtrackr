@@ -1,2 +1,141 @@
 __pycache__/
 venv/
+# === SISTEMAS OPERACIONAIS ===
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# === GIT ===
+*.orig
+*.rej
+*.bak
+*.tmp
+*.log
+*.patch
+*.diff
+*.sublime-workspace
+*.sublime-project
+
+# === LOGS ===
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === NODE ===
+node_modules/
+npm-debug.log
+yarn.lock
+package-lock.json
+
+# === PYTHON ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.egg
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+.env
+.venv/
+venv/
+ENV/
+env.bak/
+*.sqlite3
+
+# === JAVA ===
+*.class
+*.jar
+*.war
+*.ear
+target/
+bin/
+*.iml
+*.idea/
+
+# === C/C++ ===
+*.out
+*.o
+*.obj
+*.gch
+*.so
+*.exe
+*.dll
+*.a
+
+# === ANDROID ===
+*.apk
+.gradle/
+build/
+local.properties
+*.keystore
+
+# === VS CODE ===
+.vscode/
+*.code-workspace
+
+# === INTELLIJ IDEA / JETBRAINS ===
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# === DOTNET ===
+*.dll
+*.exe
+*.pdb
+*.user
+*.cache
+*.suo
+*.sln.docstates
+.vs/
+obj/
+bin/
+*.csproj.user
+
+# === JUPYTER NOTEBOOK ===
+.ipynb_checkpoints/
+
+# === MACOS ===
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# === TEMP / BACKUP FILES ===
+*.tmp
+*.bak
+*.backup
+*.old
+*.orig
+*.swp
+
+# === ENV FILES ===
+.env
+.env.*
+
+# === TEST OUTPUT ===
+coverage/
+*.cover
+*.lcov
+.nyc_output/
+.cache/
+
+# === DATABASE FILES ===
+*.sqlite
+*.db
+*.db-journal
+
+# === OTHER PACKAGE MANAGERS ===
+.pnpm/
+.pnp.*
+.bun/
+.bun.lockb
