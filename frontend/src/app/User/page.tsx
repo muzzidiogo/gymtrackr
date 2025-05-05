@@ -91,34 +91,39 @@ export default function Home() {
                     headers: { 'Content-Type': 'application/json' },
                 });
 
-                const sessionsResponse = await fetch(`http://localhost:5000/api/usuarios/${userId}/sessoes`);
-                if (sessionsResponse.ok) {
-                    const sessionsData = await sessionsResponse.json();
-                    setSessions(sessionsData);
-                } else {
-                    console.error("Failed to fetch sessions");
-                }
-
-                if (userResponse.ok) {
-                    const userData = await userResponse.json();
-                    setUserData({
-                        nome: userData.nome,
-                        email: userData.email,
-                        dataCadastro: userData.data_criacao,
-                        ultimoTreino: userData.exercicios?.[0]?.nome || "N/A", // Add optional chaining
-                        meta: dummyUserData.meta, // Replace with actual meta if available
-                        treinos: userData.exercicios
-                            ? userData.exercicios.map((exercicio: Exercicio) => ({
-                                  data: userData.ultima_atualizacao.split(" ")[0],
-                                  nome: exercicio.nome,
-                                  duração: `${exercicio.series * exercicio.repeticoes * 3} minutos`,
-                              }))
-                            : [], // Handle undefined exercicios
-                        estatisticas: dummyUserData.estatisticas, // Replace with actual stats if available
-                    });
-                } else {
+                if(!userResponse.ok){
                     console.error("Failed to fetch user data");
                 }
+
+                const sessionsResponse = await fetch(`http://localhost:5000/api/usuarios/${userId}/sessoes`);
+                if (!sessionsResponse.ok) {
+                    console.error("Failed to fetch sessions");
+                } 
+
+                const userData = await userResponse.json();
+                const sessionsData = await sessionsResponse.json();
+                setSessions(sessionsData);
+                setUserData({
+                    nome: userData.nome,
+                    email: userData.email,
+                    dataCadastro: userData.data_criacao,
+                    ultimoTreino: sessionsData[0]?.ultima_atualizacao || "N/A", // Add optional chaining
+                    meta: dummyUserData.meta, // Replace with actual meta if available
+                    treinos: sessionsData.flatMap((session: any) =>
+                        session.exercicios.map((exercicio: any) => ({
+                            id: exercicio.exercicio.id,
+                            nome: exercicio.exercicio.nome,
+                            musculo_primario: exercicio.exercicio.musculo_primario,
+                            musculo_secundario: exercicio.exercicio.musculo_secundario || null,
+                            descricao: exercicio.exercicio.descricao || null,
+                            series: exercicio.series,
+                            repeticoes: exercicio.repeticoes,
+                            peso: exercicio.peso || 0,
+                        }))
+                    ), // Map session data correctly
+                    estatisticas: dummyUserData.estatisticas, // Replace with actual stats if available
+                });
+                
 
             } catch (error) {
                 console.error("Error fetching data:", error);
@@ -318,7 +323,7 @@ export default function Home() {
                                         <thead>
                                             <tr>
                                                 <th className="pb-4 text-gray-400 font-medium">Data</th>
-                                                <th className="pb-4 text-gray-400 font-medium">nome</th>
+                                                <th className="pb-4 text-gray-400 font-medium">Nome</th>
                                                 <th className="pb-4 text-gray-400 font-medium">Duração</th>
                                                 <th className="pb-4 text-gray-400 font-medium text-right">Status</th>
                                             </tr>
@@ -326,13 +331,13 @@ export default function Home() {
                                         <tbody>
                                             {userData.treinos.map((treino, index) => (
                                                 <tr key={index} className="border-b border-gray-700/30 hover:bg-gray-700/20 transition-colors">
-                                                    <td className="py-4 text-gray-200">{'data'}</td>
+                                                    <td className="py-4 text-gray-200">{userData.ultimoTreino}</td>
                                                     <td className="py-4">
                                                         <span className="px-3 py-1 rounded-full text-sm font-medium bg-indigo-500/10 text-indigo-300">
                                                             {treino.nome}
                                                         </span>
                                                     </td>
-                                                    <td className="py-4 text-gray-200">{`${treino.series * treino.repeticoes * 4} minutos`}</td>
+                                                    <td className="py-4 text-gray-200">{treino.series * treino.repeticoes * 2} min</td>
                                                     <td className="py-4 text-right">
                                                         <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-500/10 text-green-300">
                                                             Completo
