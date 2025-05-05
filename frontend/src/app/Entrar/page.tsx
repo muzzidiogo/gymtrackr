@@ -33,6 +33,9 @@ export default function Entrar() {
       alert('Login realizado com sucesso!');
       console.log(data);
 
+      // Store the user ID in localStorage (replace if it already exists)
+      localStorage.setItem('userId', data.usuario.id);
+
       // Redirect to the user page
       router.push('/User'); // Redirect to the user page
     } catch (error) {

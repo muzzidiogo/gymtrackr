@@ -30,13 +30,21 @@ export default function Home() {
     useEffect(() => {
         async function fetchUserData() {
             try {
-                const response = await fetch('http://localhost:5000/api/usuarios/1', {
+                // Retrieve the user ID (example: from localStorage)
+                const userId = localStorage.getItem('userId'); // Adjust based on your storage mechanism
+    
+                if (!userId) {
+                    console.error("User ID not found");
+                    return;
+                }
+    
+                const response = await fetch(`http://localhost:5000/api/usuarios/${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                 });
-
+    
                 if (response.ok) {
                     const data = await response.json();
                     setUserData({
@@ -46,14 +54,16 @@ export default function Home() {
                         ultimoTreino: dummyUserData.ultimoTreino,
                         meta: dummyUserData.meta,
                         treinos: dummyUserData.treinos,
-                        estatisticas: dummyUserData.estatisticas
+                        estatisticas: dummyUserData.estatisticas,
                     });
+                } else {
+                    console.error("Failed to fetch user data");
                 }
             } catch (error) {
                 console.error("Erro ao buscar dados do usuário:", error);
             }
         }
-
+    
         fetchUserData();
     }, []);
 
