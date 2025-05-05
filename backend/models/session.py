@@ -12,6 +12,8 @@ class SessaoTreino(db.Model):
     # Relações
     usuario = db.relationship('Usuario', back_populates='sessoes_treino')
     exercicios = db.relationship('ExercicioSessao', back_populates='sessao', cascade='all, delete-orphan')
+    # Adicione esta linha para garantir que os timers sejam excluídos com a sessão
+    timers = db.relationship('TimerSessao', backref='sessao_rel', cascade='all, delete-orphan')
     
     def to_dict(self):
         return {

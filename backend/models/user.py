@@ -14,9 +14,10 @@ class Usuario(db.Model):
     peso = db.Column(db.Float, nullable=True)    # em quilogramas
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
     
-    # Relacionamento com sessões de treino
+    # Relacionamentos
     sessoes_treino = db.relationship('SessaoTreino', back_populates='usuario', cascade='all, delete-orphan')
-    tempos = db.relationship("TempoTreino", back_populates="usuario")
+    tempos = db.relationship("TempoTreino", back_populates="usuario", cascade='all, delete-orphan')
+    # O backref 'timers_sessao' é definido no model TimerSessao
     
     def to_dict(self):
         return {

@@ -11,9 +11,10 @@ class TimerSessao(db.Model):
     duracao_segundos = db.Column(db.Float, nullable=True)
     ativo = db.Column(db.Boolean, default=True)
     
-    # Relações
-    sessao = db.relationship('SessaoTreino', backref='timer')
-    usuario = db.relationship('Usuario', backref='timers_sessao')
+    # Relações - Modifique para usar o nome do backref correto definido em SessaoTreino
+    sessao = db.relationship('SessaoTreino', foreign_keys=[sessao_id], backref=db.backref('timer_ref', uselist=False))
+    # Adicione cascade para garantir que o timer seja excluído quando o usuário for removido
+    usuario = db.relationship('Usuario', backref=db.backref('timers_sessao', cascade='all, delete-orphan'))
     
     def calcular_duracao(self):
         if self.fim:

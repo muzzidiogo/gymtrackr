@@ -140,11 +140,32 @@ def remover_usuario(id):
     if not usuario:
         return jsonify({"mensagem": "Usuário não encontrado"}), 404
     
-    db.session.delete(usuario)
-    db.session.commit()
+    try:
+        # Primeiramente, remover manualmente quaisquer timers ativos
+        from models.session_timer import TimerSessao
+        timers_ativos = TimerSessao.query.filter_by(usuario_id=id, ativo=True).all()
+        
+        for timer in timers_ativos:
+            # Finaliza o timer antes de excluir
+            timer.finalizar()
+            db.session.delete(timer)
+        
+        # Agora podemos remover o usuário de forma segura
+        db.session.delete(usuario)
+        db.session.commit()
+        
+        return jsonify({"mensagem": "Usuário removido com sucesso!"})
     
-    return jsonify({"mensagem": "Usuário removido com sucesso!"})
-
+    except Exception as e:
+        db.session.rollback()
+        # Log do erro
+        import logging
+        logging.error(f"Erro ao excluir usuário {id}: {str(e)}")
+        
+        return jsonify({
+            "mensagem": "Erro ao remover usuário. Contate o suporte.",
+            "erro": str(e)
+        }), 500
 # Atualizar dados biométricos
 @usuario_bp.route('/usuarios/<int:id>/biometria', methods=['PATCH'])
 def atualizar_biometria(id):
