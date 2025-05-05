@@ -65,7 +65,8 @@ export default function Registro() {
       const loginData = await loginResponse.json();
       alert("Login realizado com sucesso!");
       console.log(loginData);
-
+      // Store the user ID in localStorage (replace if it already exists)
+      localStorage.setItem('userId', data.usuario.id);
       // Redirect to the dashboard
       router.push('/User');
     } catch (error) {
