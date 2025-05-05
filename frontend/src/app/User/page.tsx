@@ -11,10 +11,46 @@ const dummyUserData = {
     ultimoTreino: "08/04/2025",
     meta: "Perda de peso",
     treinos: [
-        { data: "08/04/2025", tipo: "Peito e Tríceps", duração: "65 min" },
-        { data: "06/04/2025", tipo: "Pernas", duração: "75 min" },
-        { data: "04/04/2025", tipo: "Costas e Bíceps", duração: "60 min" },
-        { data: "02/04/2025", tipo: "Ombros", duração: "45 min" }
+        { 
+            id: 1, 
+            nome: "Peito e Tríceps", 
+            musculo_primario: "Peito", 
+            musculo_secundario: "Tríceps, Ombros", 
+            descricao: null, 
+            series: 4, 
+            repeticoes: 12, 
+            peso: 60 
+        },
+        { 
+            id: 2, 
+            nome: "Pernas", 
+            musculo_primario: "Quadríceps", 
+            musculo_secundario: "Glúteos", 
+            descricao: null, 
+            series: 5, 
+            repeticoes: 10, 
+            peso: 80 
+        },
+        { 
+            id: 3, 
+            nome: "Costas e Bíceps", 
+            musculo_primario: "Costas", 
+            musculo_secundario: "Bíceps", 
+            descricao: null, 
+            series: 3, 
+            repeticoes: 15, 
+            peso: 50 
+        },
+        { 
+            id: 4, 
+            nome: "Ombros", 
+            musculo_primario: "Ombros", 
+            musculo_secundario: "Trapézio", 
+            descricao: null, 
+            series: 4, 
+            repeticoes: 10, 
+            peso: 40 
+        }
     ],
     estatisticas: {
         treinosTotal: 45,
@@ -23,47 +59,72 @@ const dummyUserData = {
     }
 };
 
+// Define the type for exercicio based on the backend model
+interface Exercicio {
+    id: number;
+    nome: string;
+    musculo_primario: string;
+    musculo_secundario?: string | null;
+    descricao?: string | null;
+    series: number;
+    repeticoes: number;
+    peso?: number;
+}
+
 export default function Home() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userData, setUserData] = useState(dummyUserData);
+    const [sessions, setSessions] = useState([]);
 
     useEffect(() => {
         async function fetchUserData() {
             try {
-                // Retrieve the user ID (example: from localStorage)
-                const userId = localStorage.getItem('userId'); // Adjust based on your storage mechanism
-    
+                const userId = localStorage.getItem('userId'); 
+
                 if (!userId) {
                     console.error("User ID not found");
                     return;
                 }
-    
-                const response = await fetch(`http://localhost:5000/api/usuarios/${userId}`, {
+
+                const userResponse = await fetch(`http://localhost:5000/api/usuarios/${userId}`, {
                     method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                 });
-    
-                if (response.ok) {
-                    const data = await response.json();
+
+                const sessionsResponse = await fetch(`http://localhost:5000/api/usuarios/${userId}/sessoes`);
+                if (sessionsResponse.ok) {
+                    const sessionsData = await sessionsResponse.json();
+                    setSessions(sessionsData);
+                } else {
+                    console.error("Failed to fetch sessions");
+                }
+
+                if (userResponse.ok) {
+                    const userData = await userResponse.json();
                     setUserData({
-                        nome: data.nome,
-                        email: data.email,
-                        dataCadastro: data.data_criacao,
-                        ultimoTreino: dummyUserData.ultimoTreino,
-                        meta: dummyUserData.meta,
-                        treinos: dummyUserData.treinos,
-                        estatisticas: dummyUserData.estatisticas,
+                        nome: userData.nome,
+                        email: userData.email,
+                        dataCadastro: userData.data_criacao,
+                        ultimoTreino: userData.exercicios?.[0]?.nome || "N/A", // Add optional chaining
+                        meta: dummyUserData.meta, // Replace with actual meta if available
+                        treinos: userData.exercicios
+                            ? userData.exercicios.map((exercicio: Exercicio) => ({
+                                  data: userData.ultima_atualizacao.split(" ")[0],
+                                  nome: exercicio.nome,
+                                  duração: `${exercicio.series * exercicio.repeticoes * 3} minutos`,
+                              }))
+                            : [], // Handle undefined exercicios
+                        estatisticas: dummyUserData.estatisticas, // Replace with actual stats if available
                     });
                 } else {
                     console.error("Failed to fetch user data");
                 }
+
             } catch (error) {
-                console.error("Erro ao buscar dados do usuário:", error);
+                console.error("Error fetching data:", error);
             }
         }
-    
+
         fetchUserData();
     }, []);
 
@@ -257,7 +318,7 @@ export default function Home() {
                                         <thead>
                                             <tr>
                                                 <th className="pb-4 text-gray-400 font-medium">Data</th>
-                                                <th className="pb-4 text-gray-400 font-medium">Tipo</th>
+                                                <th className="pb-4 text-gray-400 font-medium">nome</th>
                                                 <th className="pb-4 text-gray-400 font-medium">Duração</th>
                                                 <th className="pb-4 text-gray-400 font-medium text-right">Status</th>
                                             </tr>
@@ -265,13 +326,13 @@ export default function Home() {
                                         <tbody>
                                             {userData.treinos.map((treino, index) => (
                                                 <tr key={index} className="border-b border-gray-700/30 hover:bg-gray-700/20 transition-colors">
-                                                    <td className="py-4 text-gray-200">{treino.data}</td>
+                                                    <td className="py-4 text-gray-200">{'data'}</td>
                                                     <td className="py-4">
                                                         <span className="px-3 py-1 rounded-full text-sm font-medium bg-indigo-500/10 text-indigo-300">
-                                                            {treino.tipo}
+                                                            {treino.nome}
                                                         </span>
                                                     </td>
-                                                    <td className="py-4 text-gray-200">{treino.duração}</td>
+                                                    <td className="py-4 text-gray-200">{`${treino.series * treino.repeticoes * 4} minutos`}</td>
                                                     <td className="py-4 text-right">
                                                         <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-500/10 text-green-300">
                                                             Completo
@@ -299,7 +360,7 @@ export default function Home() {
                                 <Link href="/User/Treinos">
                                     <button className="w-64 px-8 py-4 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg shadow-indigo-500/20 transform hover:-translate-y-1 duration-300 border border-indigo-400/30 flex items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 a2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                         </svg>
                                         Ver Treinos
                                     </button>
