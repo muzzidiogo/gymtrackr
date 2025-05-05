@@ -30,7 +30,13 @@ export default function UserProfile() {
     useEffect(() => {
         async function fetchUserData() {
             try {
-                const response = await fetch('http://localhost:5000/api/usuarios/1', {
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    console.error("User ID not found");
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:5000/api/usuarios/${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
