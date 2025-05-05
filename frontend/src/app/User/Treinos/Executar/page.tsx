@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -22,13 +22,11 @@ export default function ExecutarTreino() {
     });
     const [showFinishConfirmation, setShowFinishConfirmation] = useState(false);
     const [showAddExerciseForm, setShowAddExerciseForm] = useState(false);
-    const [newExercise, setNewExercise] = useState({
-        nome: "",
-        series: 3,
-        repeticoes: "10-12",
-        peso: "0kg",
-        completed: false
-    });
+    const [availableExercises, setAvailableExercises] = useState([]);
+    const selectedExerciseIdRef = useRef<number | null>(null);
+    const seriesRef = useRef<HTMLInputElement>(null);
+    const repeticoesRef = useRef<HTMLInputElement>(null);
+    const pesoRef = useRef<HTMLInputElement>(null);
 
     const searchParams = useSearchParams();
     const sessionId = searchParams.get('sessionId');
@@ -71,7 +69,26 @@ export default function ExecutarTreino() {
             }
         }
 
+        async function fetchAvailableExercises() {
+            try {
+                const response = await fetch('http://localhost:5000/api/exercicios', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setAvailableExercises(data);
+                } else {
+                    console.error("Failed to fetch available exercises");
+                }
+            } catch (error) {
+                console.error("Error fetching available exercises:", error);
+            }
+        }
+
         fetchSessionData();
+        fetchAvailableExercises();
     }, [sessionId]);
 
     useEffect(() => {
@@ -150,28 +167,52 @@ export default function ExecutarTreino() {
         setEditingExercise(null);
     };
 
-    const addExercise = () => {
-        if (!newExercise.nome) {
-            alert("Nome do exercício é obrigatório");
+    const addExerciseToSession = async () => {
+        if (!sessionId || !selectedExerciseIdRef.current) {
+            console.error("Session or exercise not selected");
             return;
         }
 
-        const updatedExercicios = [...workout.exercicios, newExercise];
+        const newExerciseData = {
+            exercicio_id: selectedExerciseIdRef.current,
+            series: parseInt(seriesRef.current?.value || '0', 10),
+            repeticoes: parseInt(repeticoesRef.current?.value || '0', 10),
+            peso: parseFloat(pesoRef.current?.value || '0'),
+        };
 
-        setWorkout({
-            ...workout,
-            exercicios: updatedExercicios
-        });
+        try {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                console.error("User ID not found");
+                return;
+            }
 
-        setNewExercise({
-            nome: "",
-            series: 3,
-            repeticoes: "10-12",
-            peso: "0kg",
-            completed: false
-        });
+            const response = await fetch(`http://localhost:5000/api/usuarios/${userId}/sessoes/${sessionId}/exercicios`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newExerciseData),
+            });
 
-        setShowAddExerciseForm(false);
+            if (response.ok) {
+                const updatedExercise = await response.json();
+                setWorkout((prevWorkout) => ({
+                    ...prevWorkout,
+                    exercicios: [...prevWorkout.exercicios, {
+                        id: updatedExercise.exercicio_sessao.id,
+                        nome: updatedExercise.exercicio_sessao.exercicio.nome,
+                        series: updatedExercise.exercicio_sessao.series,
+                        repeticoes: updatedExercise.exercicio_sessao.repeticoes,
+                        peso: `${updatedExercise.exercicio_sessao.peso}kg`,
+                        completed: false,
+                    }],
+                }));
+                setShowAddExerciseForm(false);
+            } else {
+                console.error("Failed to add exercise to session");
+            }
+        } catch (error) {
+            console.error("Error adding exercise to session:", error);
+        }
     };
 
     const deleteExercise = (index: number) => {
@@ -517,43 +558,45 @@ export default function ExecutarTreino() {
                             <div className="p-6">
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm text-gray-400 mb-1">Nome do Exercício</label>
-                                        <input
-                                            type="text"
-                                            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                            placeholder="Ex: Supino Reto"
-                                            value={newExercise.nome}
-                                            onChange={(e) => setNewExercise({ ...newExercise, nome: e.target.value })}
-                                        />
+                                        <label className="block text-sm text-gray-400 mb-1">Exercício</label>
+                                        <select
+                                            className="w-full bg-gray-700 text-gray-300 p-2 rounded"
+                                            onChange={(e) => selectedExerciseIdRef.current = parseInt(e.target.value, 10)}
+                                        >
+                                            <option value="" disabled selected>Selecione um exercício</option>
+                                            {availableExercises.map((exercise: any) => (
+                                                <option key={exercise.id} value={exercise.id}>
+                                                    {exercise.nome}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
                                     <div className="grid grid-cols-3 gap-4">
                                         <div>
                                             <label className="block text-sm text-gray-400 mb-1">Séries</label>
                                             <input
                                                 type="number"
+                                                ref={seriesRef}
                                                 className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                                value={newExercise.series}
-                                                onChange={(e) => setNewExercise({ ...newExercise, series: parseInt(e.target.value) || 0 })}
+                                                placeholder="Ex: 3"
                                             />
                                         </div>
                                         <div>
                                             <label className="block text-sm text-gray-400 mb-1">Repetições</label>
                                             <input
-                                                type="text"
+                                                type="number"
+                                                ref={repeticoesRef}
                                                 className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                                placeholder="Ex: 10-12"
-                                                value={newExercise.repeticoes}
-                                                onChange={(e) => setNewExercise({ ...newExercise, repeticoes: e.target.value })}
+                                                placeholder="Ex: 10"
                                             />
                                         </div>
                                         <div>
                                             <label className="block text-sm text-gray-400 mb-1">Peso</label>
                                             <input
-                                                type="text"
+                                                type="number"
+                                                ref={pesoRef}
                                                 className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                                placeholder="Ex: 30kg"
-                                                value={newExercise.peso}
-                                                onChange={(e) => setNewExercise({ ...newExercise, peso: e.target.value })}
+                                                placeholder="Ex: 20"
                                             />
                                         </div>
                                     </div>
@@ -568,7 +611,7 @@ export default function ExecutarTreino() {
                                 </button>
                                 <button
                                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                                    onClick={addExercise}
+                                    onClick={addExerciseToSession}
                                 >
                                     Adicionar
                                 </button>
