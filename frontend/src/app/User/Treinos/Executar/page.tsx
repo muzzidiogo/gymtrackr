@@ -1,32 +1,17 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Head from 'next/head';
 import Link from 'next/link';
 
-const userData = {
-    nome: "Carlos Silva",
-    email: "carlos.silva@email.com"
-};
-
-// Dados de exemplo para treino atual
-const currentWorkout = {
-    id: 1,
-    nome: "Treino A - Superior",
-    categoria: "Hipertrofia",
-    ultimoTempo: "02h30",
-    exercicios: [
-        { nome: "Supino Reto", series: 4, repeticoes: "10-12", peso: "80kg", completed: false },
-        { nome: "Puxada Frontal", series: 4, repeticoes: "10-12", peso: "70kg", completed: false },
-        { nome: "Desenvolvimento", series: 3, repeticoes: "10-12", peso: "20kg", completed: false },
-        { nome: "Rosca Direta", series: 3, repeticoes: "12-15", peso: "25kg", completed: false },
-        { nome: "Tríceps Corda", series: 3, repeticoes: "12-15", peso: "30kg", completed: false }
-    ]
-};
-
 export default function ExecutarTreino() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [workout, setWorkout] = useState(currentWorkout);
+    const [workout, setWorkout] = useState({
+        nome: "",
+        categoria: "",
+        exercicios: [],
+    });
     const [time, setTime] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
     const [editingExercise, setEditingExercise] = useState<number | null>(null);
@@ -45,7 +30,50 @@ export default function ExecutarTreino() {
         completed: false
     });
 
-    // Efeito para o cronômetro
+    const searchParams = useSearchParams();
+    const sessionId = searchParams.get('sessionId');
+
+    useEffect(() => {
+        async function fetchSessionData() {
+            if (!sessionId) return;
+
+            try {
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    console.error("User ID not found");
+                    return;
+                }
+
+                const response = await fetch(`http://localhost:5000/api/usuarios/${userId}/sessoes/${sessionId}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+
+                if (response.ok) {
+                    const sessionData = await response.json();
+                    setWorkout({
+                        nome: sessionData.nome,
+                        categoria: "Hipertrofia", // Placeholder, replace if category is available in the backend
+                        exercicios: sessionData.exercicios.map((exercicioSessao: any) => ({
+                            id: exercicioSessao.id,
+                            nome: exercicioSessao.exercicio.nome,
+                            series: exercicioSessao.series,
+                            repeticoes: exercicioSessao.repeticoes,
+                            peso: `${exercicioSessao.peso}kg`,
+                            completed: false,
+                        })),
+                    });
+                } else {
+                    console.error("Failed to fetch session data");
+                }
+            } catch (error) {
+                console.error("Error fetching session data:", error);
+            }
+        }
+
+        fetchSessionData();
+    }, [sessionId]);
+
     useEffect(() => {
         let interval: NodeJS.Timeout | null = null;
 
@@ -62,7 +90,6 @@ export default function ExecutarTreino() {
         };
     }, [isRunning]);
 
-    // Funções para cronômetro
     const startTimer = () => setIsRunning(true);
     const pauseTimer = () => setIsRunning(false);
     const resetTimer = () => {
@@ -70,7 +97,6 @@ export default function ExecutarTreino() {
         setTime(0);
     };
 
-    // Formatar o tempo para exibição (HH:MM:SS)
     const formatTime = (timeInSeconds: number) => {
         const hours = Math.floor(timeInSeconds / 3600);
         const minutes = Math.floor((timeInSeconds % 3600) / 60);
@@ -83,7 +109,6 @@ export default function ExecutarTreino() {
         ].join(':');
     };
 
-    // Marcar exercício como concluído ou não
     const toggleExerciseCompletion = (index: number) => {
         const updatedExercicios = [...workout.exercicios];
         updatedExercicios[index] = {
@@ -97,7 +122,6 @@ export default function ExecutarTreino() {
         });
     };
 
-    // Iniciar edição de um exercício
     const startEditingExercise = (index: number) => {
         setEditingExercise(index);
         setExerciseEdits({
@@ -107,7 +131,6 @@ export default function ExecutarTreino() {
         });
     };
 
-    // Salvar edição de exercício
     const saveExerciseEdit = () => {
         if (editingExercise === null) return;
 
@@ -128,7 +151,6 @@ export default function ExecutarTreino() {
     };
 
     const addExercise = () => {
-        // Validação básica
         if (!newExercise.nome) {
             alert("Nome do exercício é obrigatório");
             return;
@@ -141,7 +163,6 @@ export default function ExecutarTreino() {
             exercicios: updatedExercicios
         });
 
-        // Resetar o formulário
         setNewExercise({
             nome: "",
             series: 3,
@@ -150,7 +171,6 @@ export default function ExecutarTreino() {
             completed: false
         });
 
-        // Fechar o formulário
         setShowAddExerciseForm(false);
     };
 
@@ -165,19 +185,14 @@ export default function ExecutarTreino() {
         }
     };
 
-    // Concluir treino
     const finishWorkout = () => {
-        // Aqui você pode adicionar lógica para salvar o treino concluído
-        // Por exemplo, guardar o tempo total, os exercícios feitos, etc.
         const totalTime = formatTime(time);
         console.log(`Treino concluído em ${totalTime}`);
-
-        // Simular retorno à página de treinos
         window.location.href = "/User/Treinos";
     };
 
     const openFinishConfirmation = () => {
-        setIsRunning(false); // Pausa o cronômetro
+        setIsRunning(false);
         setShowFinishConfirmation(true);
     };
 
@@ -188,13 +203,10 @@ export default function ExecutarTreino() {
                 <meta name="description" content="Execução de treino personalizado" />
             </Head>
             <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100">
-                {/* Navbar */}
                 <div className="border-b border-gray-700 shadow-md bg-gray-900 sticky top-0 z-10">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <nav className="flex items-center justify-between py-6">
                             <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">GymTrackr</div>
-
-                            {/* Mobile menu button */}
                             <button
                                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                                 className="md:hidden p-2 rounded-md text-gray-300 hover:bg-gray-700 focus:outline-none"
@@ -209,23 +221,19 @@ export default function ExecutarTreino() {
                                     </svg>
                                 )}
                             </button>
-
-                            {/* Desktop Navigation */}
                             <div className="hidden md:flex md:items-center space-x-8">
                                 <a href="/User" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Home</a>
                                 <a href="/User/Treinos" className="font-medium text-indigo-400 transition-colors">Treinos</a>
                                 <a href="/User/Desempenho" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Desempenho</a>
                                 <a href="/User/Comunidade" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors">Comunidade</a>
                             </div>
-
-                            {/* Auth Buttons */}
                             <div className="hidden md:flex space-x-4">
                                 <div className="relative group">
                                     <button className="flex items-center space-x-2 px-3 py-2 rounded-lg border border-indigo-500 hover:bg-gray-700 transition-colors">
                                         <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-medium">
-                                            {userData.nome.charAt(0)}
+                                            U
                                         </div>
-                                        <span className="text-gray-300">{userData.nome}</span>
+                                        <span className="text-gray-300">Usuário</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
@@ -245,8 +253,6 @@ export default function ExecutarTreino() {
                         </nav>
                     </div>
                 </div>
-
-                {/* Mobile Menu */}
                 {mobileMenuOpen && (
                     <div className="md:hidden bg-gray-800 rounded-lg shadow-lg p-4 mx-4 mb-4 border border-gray-700 mt-2">
                         <div className="flex flex-col space-y-4">
@@ -254,7 +260,6 @@ export default function ExecutarTreino() {
                             <a href="/User/Treinos" className="font-medium text-indigo-400 transition-colors py-2">Treinos</a>
                             <a href="/User/Desempenho" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors py-2">Desempenho</a>
                             <a href="/User/Comunidade" className="font-medium text-gray-300 hover:text-indigo-400 transition-colors py-2">Comunidade</a>
-                            {/* Opções de perfil para usuário logado */}
                             <div className="pt-4 border-t border-gray-700">
                                 <Link href="/User/Dados" className="block py-2 text-gray-300 hover:text-indigo-400">
                                     Meus Dados
@@ -268,9 +273,7 @@ export default function ExecutarTreino() {
                         </div>
                     </div>
                 )}
-
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow">
-                    {/* Breadcrumb */}
                     <div className="flex items-center text-sm text-gray-400 mb-8">
                         <Link href="/User" className="hover:text-indigo-400">Home</Link>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mx-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -282,17 +285,12 @@ export default function ExecutarTreino() {
                         </svg>
                         <span className="text-indigo-400">{workout.nome}</span>
                     </div>
-
-                    {/* Page Header */}
                     <div className="mb-8">
                         <h1 className="text-3xl font-bold text-white mb-2">{workout.nome}</h1>
                         <div className="flex items-center text-gray-400">
                             <span className="px-3 py-1 bg-gray-700 rounded-md text-indigo-300 text-sm mr-3">{workout.categoria}</span>
-                            <span>Tempo anterior: {workout.ultimoTempo}</span>
                         </div>
                     </div>
-
-                    {/* Cronômetro e Controles */}
                     <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-700 shadow-xl mb-8">
                         <div className="p-6">
                             <h2 className="text-xl font-semibold text-white mb-6">Cronômetro do Treino</h2>
@@ -345,8 +343,6 @@ export default function ExecutarTreino() {
                             </div>
                         </div>
                     </div>
-
-                    {/* Lista de Exercícios */}
                     <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl border border-gray-700 shadow-xl">
                         <div className="p-6">
                             <h2 className="text-xl font-semibold text-white mb-6">Exercícios</h2>
@@ -357,7 +353,6 @@ export default function ExecutarTreino() {
                                         className={`p-4 rounded-lg border ${exercicio.completed ? 'bg-gray-700/60 border-green-500' : 'bg-gray-750 border-gray-700'}`}
                                     >
                                         {editingExercise === index ? (
-                                            // Modo de edição
                                             <div className="space-y-4">
                                                 <div className="flex justify-between items-center">
                                                     <h3 className="text-lg font-medium text-white">{exercicio.nome}</h3>
@@ -411,7 +406,6 @@ export default function ExecutarTreino() {
                                                 </div>
                                             </div>
                                         ) : (
-                                            // Modo de visualização
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center">
                                                     <button
@@ -457,7 +451,6 @@ export default function ExecutarTreino() {
                                         )}
                                     </div>
                                 ))}
-                                {/* Botão Adicionar Exercício */}
                                 <div className="mt-6 flex justify-center">
                                     <button
                                         onClick={() => setShowAddExerciseForm(true)}
@@ -469,12 +462,9 @@ export default function ExecutarTreino() {
                                         Adicionar Exercício
                                     </button>
                                 </div>
-
                             </div>
                         </div>
                     </div>
-
-                    {/* Botão de voltar */}
                     <div className="mt-8 flex justify-end">
                         <Link href="/User/Treinos">
                             <button
@@ -487,8 +477,6 @@ export default function ExecutarTreino() {
                             </button>
                         </Link>
                     </div>
-
-                    {/* Modal de confirmação para finalizar treino */}
                     {showFinishConfirmation && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                             <div className="bg-gray-800 rounded-xl border border-gray-700 max-w-md w-full">
@@ -520,8 +508,6 @@ export default function ExecutarTreino() {
                         </div>
                     )}
                 </div>
-
-                {/* Modal para adicionar exercício */}
                 {showAddExerciseForm && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                         <div className="bg-gray-800 rounded-xl border border-gray-700 max-w-md w-full">
@@ -590,8 +576,6 @@ export default function ExecutarTreino() {
                         </div>
                     </div>
                 )}
-
-                {/* Footer with top separator */}
                 <footer className="bg-black text-white py-12 mt-auto border-t border-gray-700">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
@@ -599,7 +583,6 @@ export default function ExecutarTreino() {
                                 <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">GymTrackr</div>
                                 <p className="text-gray-400">A melhor plataforma para acompanhar seu progresso fitness e alcançar seus objetivos.</p>
                             </div>
-
                             <div>
                                 <h3 className="text-lg font-semibold mb-4 text-indigo-300">Recursos</h3>
                                 <ul className="space-y-3">
@@ -609,7 +592,6 @@ export default function ExecutarTreino() {
                                     <li><a href="#" className="text-gray-500 hover:text-indigo-300 transition-colors">Planos de Treino</a></li>
                                 </ul>
                             </div>
-
                             <div>
                                 <h3 className="text-lg font-semibold mb-4 text-indigo-300">Empresa</h3>
                                 <ul className="space-y-3">
@@ -619,7 +601,6 @@ export default function ExecutarTreino() {
                                     <li><a href="#" className="text-gray-500 hover:text-indigo-300 transition-colors">Contato</a></li>
                                 </ul>
                             </div>
-
                             <div>
                                 <h3 className="text-lg font-semibold mb-4 text-indigo-300">Suporte</h3>
                                 <ul className="space-y-3">
@@ -630,13 +611,12 @@ export default function ExecutarTreino() {
                                 </ul>
                             </div>
                         </div>
-
                         <div className="pt-8 mt-8 border-t border-gray-800 text-center text-gray-500">
                             &copy; 2025 GymTrackr. Todos os direitos reservados.
                         </div>
                     </div>
                 </footer>
-            </div >
+            </div>
         </>
     );
 }

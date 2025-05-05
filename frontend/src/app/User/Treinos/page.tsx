@@ -509,7 +509,7 @@ export default function Treinos() {
                                             >
                                                 {expandedSession === session.id ? "Fechar" : "Ver Detalhes"}
                                             </button>
-                                            <Link href={`/User/Treinos/Executar/`}>
+                                            <Link href={`/User/Treinos/Executar?sessionId=${session.id}`}>
                                                 <button
                                                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                                                 >
