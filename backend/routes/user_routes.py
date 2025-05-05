@@ -136,21 +136,23 @@ def editar_usuario(id):
 # Deletar um usuário
 @usuario_bp.route('/usuarios/<int:id>', methods=['DELETE'])
 def remover_usuario(id):
+    # Encontrar o usuário na base de dados
     usuario = Usuario.query.get(id)
     if not usuario:
         return jsonify({"mensagem": "Usuário não encontrado"}), 404
     
     try:
-        # Primeiramente, remover manualmente quaisquer timers ativos
+        # Finalizar todos os timers ativos antes da exclusão
+        # Isso não é estritamente necessário com a configuração correta de cascade,
+        # mas é uma boa prática para garantir dados consistentes
         from models.session_timer import TimerSessao
         timers_ativos = TimerSessao.query.filter_by(usuario_id=id, ativo=True).all()
         
         for timer in timers_ativos:
-            # Finaliza o timer antes de excluir
             timer.finalizar()
-            db.session.delete(timer)
         
-        # Agora podemos remover o usuário de forma segura
+        # A exclusão do usuário agora deve propagar automaticamente para todos os
+        # objetos relacionados graças à configuração de cascade='all, delete-orphan'
         db.session.delete(usuario)
         db.session.commit()
         
@@ -158,7 +160,6 @@ def remover_usuario(id):
     
     except Exception as e:
         db.session.rollback()
-        # Log do erro
         import logging
         logging.error(f"Erro ao excluir usuário {id}: {str(e)}")
         
